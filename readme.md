@@ -15,4 +15,4 @@ npm vision-corejs
 ```
 
 License
-[MIT](https://github.com/MrSRK/cjs/license)
+[MIT](https://github.com/MrSRK/cjs/blob/master/license)
