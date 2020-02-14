@@ -1,0 +1,29 @@
+{
+  "name": "cjs",
+  "version": "1.0.0",
+  "description": "Vision Group Nodejs Core 1",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrSRK/cjs.git"
+  },
+  "keywords": [
+    "Node.js",
+    "MongoDB",
+    "Express",
+    "Bug",
+    "AngularJS",
+    "JQuery",
+    "Bootstraps",
+    "4"
+  ],
+  "author": "MrSRK",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MrSRK/cjs/issues"
+  },
+  "homepage": "https://github.com/MrSRK/cjs#readme"
+}
