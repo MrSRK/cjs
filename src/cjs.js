@@ -1,6 +1,7 @@
 "use strict"
 const chalk=require('chalk')
 const core=require('./core')
+const loader=require('./loader')
 /**
  * Vision Core Main Class
  */
@@ -11,11 +12,19 @@ const CJS=class
         try
         {
             console.group('\n%s',chalk.bgWhite.black('→ Core Loader '))
-            core.deploy(config,error=>
+            return core.deploy(config,(error,app)=>
             {
                 if(error)
                     throw error
                 console.groupEnd()
+                console.group('\n%s',chalk.bgWhite.black('→ Modules Loader '))
+                return loader.deploy(app,config,(error,router)=>
+                {
+                    if(error)
+                        throw error
+                    app.use(router)
+                    core.portListen()
+                })
             })
         }
         catch(error)

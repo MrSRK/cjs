@@ -10,17 +10,19 @@ const session=require('./core/session')
 const cookie=require('./core/cookie')
 const security=require('./core/security')
 const sass=require('./core/sass')
+let app=null;
 const deploy=async(config,next)=>
 {
     try
     {
         // Init Express
-        const app=new express()
+        app=new express()
         // Set Error handler
         errorhandler.deploy((status,error,property)=>
         {
             if(error)
                 throw error
+            console.log(property)
             if(status)
                 app.use(property)
             console.log("%s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Error Handler'),chalk.magenta('Loaded successfully'))
@@ -105,7 +107,7 @@ const deploy=async(config,next)=>
             console.log("%s  [%s] \t\t\t %s",chalk.green('↳'),chalk.cyan('SASS'),chalk.magenta('Loaded successfully'))
             return true
          })
-         next()
+         next(null,app)
     }
     catch(error)
     {
@@ -114,4 +116,9 @@ const deploy=async(config,next)=>
         return next(error)
     }
 }
+const portListen=_=>
+{
+    app.listen(process.env.EXPRESS_POST||80)
+}
 module.exports.deploy=deploy
+module.exports.portListen=portListen
