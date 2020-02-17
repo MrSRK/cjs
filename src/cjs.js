@@ -1,34 +1,27 @@
 "use strict"
-const chalk=require('chalk');
+const chalk=require('chalk')
+const core=require('./core')
 /**
  * Vision Core Main Class
  */
 const CJS=class
 {
-    constructor(args)
+    constructor(config)
     {
         try
         {
-            //Load Configuration
-            //Load Core
-                /*
-                    Load Error parser
-                    Load Error Hundler
-                    Load Database
-                    Load Body Parser
-                    Load Session
-                    Load Cookies
-                    Load Security
-
-                */
-            //Load modules
-            //set roots
-            //set views
+            console.group('\n%s',chalk.bgWhite.black('→ Core Loader '))
+            core.deploy(config,error=>
+            {
+                if(error)
+                    throw error
+                console.groupEnd()
+            })
         }
-        catch(Error)
+        catch(error)
         {
             console.log(chalk.red('Error'))
-            console.log(Error)
+            console.log(error)
             console.log(chalk.red.bold('[Process Exit]'))
             process.exit(1)
         }

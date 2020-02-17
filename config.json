@@ -1,3 +1,41 @@
 {
-    
+    "modules":
+    {
+        "root":"../modules"
+    },
+    "lusca":
+    {
+        "csrf":{
+            "angular":true
+        },
+        "xframe":"SAMEORIGIN",
+        "csp":
+        {
+            "policy":
+            {
+                "default-src":"'self'",
+                "img-src":"'self'",
+                "script-src":"'self'",
+                "style-src":"'self'",
+                "font-src":"'self'"
+            }
+        },
+        "p3p":null,
+        "hsts":
+        {
+            "maxAge":31536000,
+            "includeSubDomains":true,
+            "preload":true
+        },
+        "xssProtection":true,
+        "nosniff":true,
+        "referrerPolicy":"same-origin"
+    },
+    "sass":
+    {
+        "outputStyle":"compressed",
+        "src":"public",
+        "dest":"public",
+        "maxAge":3888000
+    }
 }
