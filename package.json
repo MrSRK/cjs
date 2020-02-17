@@ -4,7 +4,6 @@
   "description": "Vision Group Nodejs Core 1",
   "main": "app.js",
   "scripts": {
-    "start": "tsc && node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -26,6 +25,8 @@
     "url": "https://github.com/MrSRK/cjs/issues"
   },
   "homepage": "https://github.com/MrSRK/cjs#readme",
-  "dependencies": {},
+  "dependencies": {
+    "chalk": "^3.0.0"
+  },
   "devDependencies": {}
 }
