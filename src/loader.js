@@ -55,13 +55,163 @@ const deploy=(app,config,next)=>
 }
 toolbox.route=(name,config,controller)=>
 {
-    if(config.routes)
-        config.routes.forEach(r=>
+    if(config.router.routes)
+        config.router.routes.forEach(r=>
         {
-            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(r.path),chalk.yellow(r['controller']+'()'))
-            toolbox.router[r.method](r.path,controller[r['controller']])
+            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(name+r.path),chalk.yellow(r['controller']+'()'))
+            if(controller[r['controller']])
+                toolbox.router[r.method]('/'+name+r.path,controller[r['controller']])
         })
-        return true
+    if(config.router.gustUserDefaultRoutes)
+    {
+        const guestRoutes={
+            pug:
+            [
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/list",
+                    "controller":"list"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/show/:_id",
+                    "controller":"show"
+                }
+            ],
+            api:
+            [
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/list",
+                    "controller":"apiList"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/show/:_id",
+                    "controller":"apiShow"
+                }
+            ]
+        }
+        guestRoutes.pug.forEach(r=>
+        {
+            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey('/'+name+r.path),chalk.yellow(r['controller']+'()'))
+            if(controller[r['controller']])
+                toolbox.router[r.method]('/'+name+r.path,controller[r['controller']])
+        })
+        guestRoutes.api.forEach(r=>
+        {
+            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey('/api/'+name+r.path),chalk.yellow(r['controller']+'()'))
+            if(controller[r['controller']])
+                toolbox.router[r.method]('/api/'+name+r.path,controller[r['controller']])
+        })
+    }
+    if(config.router.userRoutes)
+    {
+        const userRouts={
+            pug:
+            [
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/signIn",
+                    "controller":"signIn"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/signUp",
+                    "controller":"signUp"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/signOut",
+                    "controller":"signOut"
+                },
+            ],
+            api:
+            [
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/signIn",
+                    "controller":"apiSignIn"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/signUp",
+                    "controller":"apiSignUp"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/signOut",
+                    "controller":"apiSignOut"
+                },
+            ]
+        }
+        let powerRoot=''
+        if(config.router.powerUser)
+            powerRoot='/'+config.router.powerUser
+        let us=[]
+        if(config.router.powerUser)
+        {
+            us.pug=userRouts.pug.concat([
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/table",
+                    "controller":"table"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/edit/:_id",
+                    "controller":"edit"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/new",
+                    "controller":"new"
+                },
+            ])
+            us.api=userRouts.api.concat([
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/table",
+                    "controller":"apiTable"
+                },
+                {
+                    "method":"get",
+                    "status":200,
+                    "path":"/edit/:_id",
+                    "controller":"apiEdit"
+                },
+            ])
+        }
+        else
+            us=userRouts
+        us.pug.forEach(r=>
+        {
+            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/'+name+r.path),chalk.yellow(r['controller']+'()'))
+            if(controller[r['controller']])
+                toolbox.router[r.method](powerRoot+'/'+name+r.path,controller[r['controller']])
+        })
+        us.api.forEach(r=>
+        {
+            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api/'+name+r.path),chalk.yellow(r['controller']+'()'))
+            if(controller[r['controller']])
+                toolbox.router[r.method](powerRoot+'/api/'+name+r.path,controller[r['controller']])
+        })
+    }
+    return true
 }
 const load=(app,mod)=>
 {

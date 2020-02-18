@@ -3,33 +3,35 @@ const model=require('./model')
 const controller=(toolbox,name)=>
 {
     const route={}
-    const defaultRoutes=[
-        'list',
-        'show',
-        'signIn',
-        'sighUp',
-
-        'signOut',
-        'table',
-        'edit',
-        'new',
-
-        'Gfind',
-        'GfindById',
-        'GsignIn',
-        'GsignUp',
-
-        'AsignOut',
-        'Afind',
-        'AfindById'
-    ]
-    defaultRoutes.forEach(f=>
+    const defaultRoutes={
+        pug:
+        [
+            'list',
+            'show',
+            'signIn',
+            'sighUp',
+            'signOut',
+            'table',
+            'edit',
+            'new',
+        ],
+        api:
+        [
+            'apiList',
+            'apiShow',
+            'apiSignIn',
+            'apiSignUp',
+            'apiSignOut',
+            'apiTable',
+            'apiEdit'
+        ]
+    }
+    defaultRoutes.pug.forEach(f=>
     {
-        console.log(toolbox.controller[f])
-        if(toolbox.controller[f])
+        if(toolbox.controller.pug[f])
             route[f]=(req,res)=>
             {
-                return toolbox.controller[f](toolbox,model,req,res)
+                return toolbox.controller.pug[f](toolbox,model,req,res)
             }
     })
     return route
