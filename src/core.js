@@ -1,5 +1,7 @@
 "use strict"
+const path=require('path')
 const chalk=require('chalk')
+const in_array=require('in_array')
 const express=require('express')
 const pug=require('pug')
 const errorhandler=require('./core/errorhandler')
@@ -22,10 +24,9 @@ const deploy=async(config,next)=>
         {
             if(error)
                 throw error
-            console.log(property)
             if(status)
                 app.use(property)
-            console.log("%s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Error Handler'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Error Handler'),chalk.magenta('Loaded successfully'))
             return true
         })
         // Set Error loger
@@ -35,7 +36,7 @@ const deploy=async(config,next)=>
                 throw error
             if(status)
                 app.use(property)
-            console.log("%s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Error Logger'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Error Logger'),chalk.magenta('Loaded successfully'))
             return true
         })
          // Set Database (MongoDB)
@@ -43,7 +44,7 @@ const deploy=async(config,next)=>
          {
             if(error)
                 throw error
-            console.log("%s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Database'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Database'),chalk.magenta('Loaded successfully'))
             return true
          })
         // Set Body Parser (json mode)
@@ -53,7 +54,7 @@ const deploy=async(config,next)=>
                 throw error
             if(status)
                 app.use(property)
-            console.log("%s  [%s] \t %s",chalk.green('↳'),chalk.cyan('Body Parser (json)'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t %s",chalk.green('↳'),chalk.cyan('Body Parser (json)'),chalk.magenta('Loaded successfully'))
             return true
         })
         // Set Body Parser (url mode)
@@ -63,7 +64,7 @@ const deploy=async(config,next)=>
                 throw error
             if(status)
                 app.use(property)
-            console.log("%s  [%s] \t %s",chalk.green('↳'),chalk.cyan('Body Parser (url)'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t %s",chalk.green('↳'),chalk.cyan('Body Parser (url)'),chalk.magenta('Loaded successfully'))
             return true
         })
         // Set Session (MongoDB)
@@ -73,7 +74,7 @@ const deploy=async(config,next)=>
                  throw error
             if(status)
                  app.use(property)
-            console.log("%s  [%s] \t\t\t %s",chalk.green('↳'),chalk.cyan('Session'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Session'),chalk.magenta('Loaded successfully'))
             return true
         })
         // Set Cookie
@@ -83,7 +84,7 @@ const deploy=async(config,next)=>
                  throw error
             if(status)
                  app.use(property)
-            console.log("%s  [%s] \t\t\t %s",chalk.green('↳'),chalk.cyan('Cookie'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Cookie'),chalk.magenta('Loaded successfully'))
             return true
         })
         // Set Security (Lusca)
@@ -92,9 +93,18 @@ const deploy=async(config,next)=>
             if(error)
                 throw error
             if(status)
-                app.use(property)
+                app.get('*',(req,res,n)=>
+                {
+                    const exclude=[
+                        '/favicon.ico',
+                        '/images'
+                    ]
+                    if(!in_array(req.path,exclude))
+                        app.use(property)
+                    n()
+                })
             app.disable('x-powered-by')
-            console.log("%s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Security'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Security'),chalk.magenta('Loaded successfully'))
             return true
          })
         // Set SASS (CSS)
@@ -104,10 +114,19 @@ const deploy=async(config,next)=>
                 throw error
             if(status)
                 app.use(property)
-            console.log("%s  [%s] \t\t\t %s",chalk.green('↳'),chalk.cyan('SASS'),chalk.magenta('Loaded successfully'))
+            console.log("| %s  [%s] \t\t\t %s",chalk.green('↳'),chalk.cyan('SASS'),chalk.magenta('Loaded successfully'))
             return true
          })
          next(null,app)
+        // Static Directories
+        app.use('/',express.static(path.join(__dirname,'../public')))
+        app.use('/images',express.static(path.join(__dirname,'../upload/images')))
+		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/angular')))
+		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/popper.js/dist/umd')))
+		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/bootstrap/dist/js')))
+		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/jquery/dist')))
+		app.use('/webfonts',express.static(path.join(__dirname,'../node_modules/@fortawesome/fontawesome-free/webfonts')))
+		app.use('/favicon.ico',express.static(path.join(__dirname,'../public/images/favicon.ico')))
     }
     catch(error)
     {
@@ -118,6 +137,8 @@ const deploy=async(config,next)=>
 }
 const portListen=_=>
 {
+    console.log('| %s Application is listening at port: %s',chalk.blue('[i]'),chalk.yellow(process.env.EXPRESS_POST||80))
+    console.log('| %s Press %s + %s to terminate it.',chalk.blue('[i]'),chalk.red('Ctrl'),chalk.red('C'))
     app.listen(process.env.EXPRESS_POST||80)
 }
 module.exports.deploy=deploy

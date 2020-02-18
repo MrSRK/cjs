@@ -49,19 +49,18 @@ const deploy=(app,config,next)=>
         next(error)
     }
 }
-
 toolbox.route=(name,config,controller)=>
 {
     if(config.routes)
         config.routes.forEach(r=>
         {
-            console.log("[%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(r.path),chalk.yellow(r['controller']+'()'))
+            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(r.path),chalk.yellow(r['controller']+'()'))
             toolbox.router[r.method](r.path,controller[r['controller']])
         })
         return true
 }
 const load=(app,mod)=>
 {
-    modules[modules.length]=require(mod.index)(toolbox,mod.name)
+    return modules[modules.length]=require(mod.index)(toolbox,mod.name)
 }
 module.exports.deploy=deploy

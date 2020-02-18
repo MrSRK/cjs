@@ -7,7 +7,7 @@ const deploy=next=>
 	try
 	{
         const env=process.env.NODE_ENV||'production'
-        const dir=process.env.NODE_LOG_PATH||''
+        const dir='../../'+process.env.NODE_LOG_PATH||''
         const interval=process.env.NODE_LOG_INTERVAL||'1d'
 		if(env==='development')
             return next(true,null,morgan('dev'))
@@ -23,18 +23,19 @@ const deploy=next=>
 				{
 					if(error)
 						throw(error)
-					const accessLogStream=rfs('access.log',options)
+					const accessLogStream=rfs.createStream('access.log',options)
 					return next(true,null,morgan('combined',{stream:accessLogStream}))
 				})
 			else
 			{
-				const accessLogStream=rfs('access.log',options)
+				const accessLogStream=rfs.createStream('access.log',options)
 				return next(true,null,morgan('combined',{stream:accessLogStream}))
 			}
 		})
 	}
 	catch(error)
 	{
+		console.log(error)
 		return next(false,error)
 	}
 }

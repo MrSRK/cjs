@@ -1,9 +1,17 @@
 {
     "routes":[
         {
+            "_name":"Guest Home Page",
             "method":"get",
             "status":200,
             "path":"/",
+            "controller":"home"
+        },
+        {
+            "_name":"Guest Home Page",
+            "method":"get",
+            "status":200,
+            "path":"/a",
             "controller":"home"
         }
     ]

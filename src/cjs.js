@@ -11,18 +11,20 @@ const CJS=class
     {
         try
         {
-            console.group('\n%s',chalk.bgWhite.black('→ Core Loader '))
+            console.group('\n%s ------------------------------------------------------------------',chalk.bgWhite.black('→ Core Loader '))
             return core.deploy(config,(error,app)=>
             {
                 if(error)
                     throw error
                 console.groupEnd()
-                console.group('\n%s',chalk.bgWhite.black('→ Modules Loader '))
+                console.group('\n%s ---------------------------------------------------------------',chalk.bgWhite.black('→ Modules Loader '))
                 return loader.deploy(app,config,(error,router)=>
                 {
                     if(error)
                         throw error
                     app.use(router)
+                    console.groupEnd()
+                    console.group('\n%s -----------------------------------------------------------',chalk.bgWhite.black('→ Application Loader '))
                     core.portListen()
                 })
             })

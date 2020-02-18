@@ -2,8 +2,8 @@ const controller=(toolbox,name)=>
 {
     home=(req,res)=>
     {
-        res.json({sss:'ssss'})
-        console.log('ade')
+        //console.log(res)
+        res.json({sss:'Eimai h Home Page...'})
     }
     return {home:home}
 }
