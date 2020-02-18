@@ -5,11 +5,14 @@ const fs=require('fs')
 const express=require('express')
 const modules=[]
 const toolbox={}
+const views=[path.join(__dirname,'../view')]
+const controller=require('./core/controller')
 const deploy=(app,config,next)=>
 {
     try
     {
         toolbox.router=express.Router()
+        toolbox.controller=controller
         let modulesPath=path.join(__dirname,config.modules.path||'../modules')
         if(!fs.existsSync(modulesPath))
             throw new Error('Modules directory not exists')
@@ -35,11 +38,12 @@ const deploy=(app,config,next)=>
                     let mod={
                         name:e,
                         path:modulesPath+'/'+e,
-                        index:modulesPath+'/'+e+'/index.js',
+                        index:modulesPath+'/'+e+'/index.js'
                     }
+                    views[views.length]=modulesPath+'/'+e+'/view'
                     load(app,mod)
                     if(len==0)
-                        return next(null,toolbox.router)
+                        return next(null,toolbox.router,views)
                 })
             })
         })

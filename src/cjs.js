@@ -18,11 +18,13 @@ const CJS=class
                     throw error
                 console.groupEnd()
                 console.group('\n%s ---------------------------------------------------------------',chalk.bgWhite.black('→ Modules Loader '))
-                return loader.deploy(app,config,(error,router)=>
+                return loader.deploy(app,config,(error,router,views)=>
                 {
                     if(error)
                         throw error
                     app.use(router)
+                    app.set('views',views)
+			        app.set('view engine','pug')
                     console.groupEnd()
                     console.group('\n%s -----------------------------------------------------------',chalk.bgWhite.black('→ Application Loader '))
                     core.portListen()
