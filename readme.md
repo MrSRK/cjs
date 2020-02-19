@@ -7,6 +7,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/MrSRK/cjs/blob/master/readme.md) [![Base: LGPL v1.0](https://img.shields.io/badge/Author-Vision%20Web-red.svg)](https://web.visionadv.gr)
 
+## Build Status
+## Build Status
+| Branch | Status |
+|--------|------------|
+| master | [!(https://img.shields.io/badge/Status-await-yellow.svg)]
 ## Installation
 Μπορείτε να βρείτε την εγκατάσταση στα:
 ```git
