@@ -1,4 +1,4 @@
-<img src="https://www.visionadv.gr/images/logo-new.png" align="right"  height="30"/>
+<img src="https://www.visionadv.gr/images/logo-new.png" align="right"  height="50"/>
 
 # CJS
 ## Vision Group CoreJS
