@@ -1,9 +1,12 @@
+<img src="https://www.visionadv.gr/images/logo-new.png" align="right"  height="30"/>
 # CJS
 ## Vision Group CoreJS
 
 Πλατφόρμα εταιρικής παρουσίασης με δυνατότητα προσθήκης υπηρεσιών ως (Modules)
 
-Base: web.visionadv.gr/cjs
+[![License: LGPL v1.0](https://img.shields.io/badge/License-MIT%20v1.0-blue.svg)](https://github.com/MrSRK/cjs/blob/master/readme.md)
+
+[![Base: LGPL v1.0](https://img.shields.io/badge/Author-Vision%20Web-blue.svg)](https://web.visionadv.gr)
 
 ## Installation
 Μπορείτε να βρείτε την εγκατάσταση στα:
