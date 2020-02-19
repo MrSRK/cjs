@@ -11,7 +11,7 @@
 ## Build Status
 | Branch | Status |
 |--------|------------|
-| master | [!(https://img.shields.io/badge/Status-await-yellow.svg)]
+| master | [![Branch: Status](https://img.shields.io/badge/Status-await-yellow.svg)]
 ## Installation
 Μπορείτε να βρείτε την εγκατάσταση στα:
 ```git
