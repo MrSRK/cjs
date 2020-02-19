@@ -137,9 +137,9 @@ const deploy=async(config,next)=>
 }
 const portListen=_=>
 {
-    console.log('| %s Application is listening at port: %s',chalk.blue('[i]'),chalk.yellow(process.env.EXPRESS_POST||80))
+    console.log('| %s Application is listening at port: %s',chalk.blue('[i]'),chalk.yellow(process.env.EXPRESS_PORT||80))
     console.log('| %s Press %s + %s to terminate it.',chalk.blue('[i]'),chalk.red('Ctrl'),chalk.red('C'))
-    app.listen(process.env.EXPRESS_POST||80)
+    app.listen(process.env.EXPRESS_PORT||80)
 }
 module.exports.deploy=deploy
 module.exports.portListen=portListen

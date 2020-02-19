@@ -6,7 +6,7 @@ const controller=(toolbox,name)=>
     const defaultRoutes={
         pug:
         [
-            //'pug_list',
+            'pug_list',
             //'pug_show',
             //'pug_signIn',
             //'pug_sighUp',
@@ -18,7 +18,7 @@ const controller=(toolbox,name)=>
         api:
         [
             'json_find',
-            'json_findById',
+            //'json_findById',
             //'json_authentication',
             'json_auth_find',
             'json_auth_save',

@@ -3,7 +3,7 @@
     {
         "userRoutes":true,
         "powerUser":"admin",
-        "gustUserDefaultRoutes":true,
+        "guestDefaultRoot":true,
         "rewriteRoot":null,
         "routes":
         [

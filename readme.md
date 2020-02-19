@@ -10,6 +10,10 @@ Base: web.visionadv.gr/cjs
 ```git
 https://github.com/MrSRK/cjs
 ```
+```bash
+npm vision-corejs
+```
+## Initialize
 ### app.js
 ```javascript
     "use strict"
@@ -70,14 +74,11 @@ https://github.com/MrSRK/cjs
     NODE_ENV=development
     NODE_LOG_PATH=log/
     NODE_LOG_INTERVAL=1d
-    EXPRESS_POST=80
+    EXPRESS_PORT=80
     MONGODB_URI=mongodb://localhost:27017/vcjs
     SESSION_SECRET={P45w0rd}
     COOKIE_AGE=604800000
     COOKIE_SECRET={P45w0rd}
-```
-```bash
-npm vision-corejs
 ```
 
 License
