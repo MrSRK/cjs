@@ -23,16 +23,24 @@ const controller=(toolbox,name)=>
             'apiSignUp',
             'apiSignOut',
             'apiTable',
-            'apiEdit'
+            'apiNew',
+            'apiEdit',
+            'apiDelete'
         ]
     }
     defaultRoutes.pug.forEach(f=>
     {
-        if(toolbox.controller.pug[f])
-            route[f]=(req,res)=>
-            {
-                return toolbox.controller.pug[f](toolbox,model,req,res)
-            }
+        route[f]=(req,res)=>
+        {
+            return toolbox.controller.pug[f](toolbox,model,name,req,res)
+        }
+    })
+    defaultRoutes.api.forEach(f=>
+    {
+        route[f]=(req,res)=>
+        {
+            return toolbox.controller.api[f](toolbox,model,name,req,res)
+        }
     })
     return route
 }

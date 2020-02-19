@@ -70,7 +70,7 @@ toolbox.route=(name,config,controller)=>
                 {
                     "method":"get",
                     "status":200,
-                    "path":"/list",
+                    "path":"/",
                     "controller":"list"
                 },
                 {
@@ -136,19 +136,19 @@ toolbox.route=(name,config,controller)=>
             api:
             [
                 {
-                    "method":"get",
+                    "method":"post",
                     "status":200,
                     "path":"/signIn",
                     "controller":"apiSignIn"
                 },
                 {
-                    "method":"get",
+                    "method":"put",
                     "status":200,
                     "path":"/signUp",
                     "controller":"apiSignUp"
                 },
                 {
-                    "method":"get",
+                    "method":"post",
                     "status":200,
                     "path":"/signOut",
                     "controller":"apiSignOut"
@@ -165,7 +165,7 @@ toolbox.route=(name,config,controller)=>
                 {
                     "method":"get",
                     "status":200,
-                    "path":"/table",
+                    "path":"/",
                     "controller":"table"
                 },
                 {
@@ -189,10 +189,22 @@ toolbox.route=(name,config,controller)=>
                     "controller":"apiTable"
                 },
                 {
-                    "method":"get",
+                    "method":"put",
+                    "status":200,
+                    "path":"/new/",
+                    "controller":"apiNew"
+                },
+                {
+                    "method":"patch",
                     "status":200,
                     "path":"/edit/:_id",
                     "controller":"apiEdit"
+                },
+                {
+                    "method":"delete",
+                    "status":200,
+                    "path":"/delete/:_id",
+                    "controller":"apiDelete"
                 },
             ])
         }
