@@ -6,7 +6,7 @@ const controller=(toolbox,name)=>
     const defaultRoutes={
         pug:
         [
-            'pug_list',
+            //'pug_list',
             //'pug_show',
             //'pug_signIn',
             //'pug_sighUp',
@@ -41,7 +41,7 @@ const controller=(toolbox,name)=>
         }
     })
     // Rewrite Default function for a custom home page
-    route['list']=(req,res)=>
+    route['pug_list']=(req,res)=>
     {
         return res.status(200).render('home',
         {

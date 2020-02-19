@@ -83,7 +83,7 @@ toolbox.route=(name,config,controller)=>
 				{
 					"method":"get",
 					"status":200,
-					"path":"/",
+					"path":"",
 					"controller":"pug_list"
 				},
 				{
@@ -98,7 +98,7 @@ toolbox.route=(name,config,controller)=>
 				{
 					"method":"get",
 					"status":200,
-					"path":"/",
+					"path":"",
 					"controller":"json_find"
 				},
 				{
@@ -113,6 +113,7 @@ toolbox.route=(name,config,controller)=>
 		{
 			if(controller[r['controller']])
 			{
+				r.path=r.path?r.path:'/'
 				console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.red('PUG'),chalk.red(name),chalk.blue(r.method),chalk.grey(rootname+r.path),chalk.yellow(r['controller']+'()'))
 				toolbox.router[r.method](rootname+r.path,controller[r['controller']])
 			}
@@ -174,7 +175,7 @@ toolbox.route=(name,config,controller)=>
 			{
 				"method":"get",
 				"status":200,
-				"path":"/",
+				"path":"",
 				"controller":"pug_table"
 			},
 			{
@@ -206,7 +207,7 @@ toolbox.route=(name,config,controller)=>
 			{
 				"method":"put",
 				"status":200,
-				"path":"/insert/",
+				"path":"/insert",
 				"controller":"json_auth_save"
 			},
 			{
@@ -249,6 +250,7 @@ const load=(app,mod)=>
 }
 const routeErrorPages=(router,config)=>
 {
+	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('PUG'),chalk.red('ERROR'),chalk.blue('GET'),chalk.grey('/error'))
 	return router.get('/error',(req,res,next)=>
 	{
 		return res.status(200).json({name:'default error page'})

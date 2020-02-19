@@ -29,7 +29,7 @@ defaultRoutes.pug.forEach(f=>
 {
     pug[f]=(toolbox,model,schema,name,req,res)=>
     {
-        return res.status(200).render(f,
+        return res.status(200).render(f.replace('pug_',''),
         {
             title:name.substr(0,1).toUpperCase()+name.substr(1)+' '+f.substr(0,1).toUpperCase()+f.substr(1)+' Page'
         })
