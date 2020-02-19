@@ -1,10 +1,10 @@
 {
     "router":
     {
-        "userRoutes":true,
+        "userRoutes":false,
         "powerUser":"admin",
         "gustUserDefaultRoutes":true,
-        "rewriteRoot":null,
+        "rewriteRoot":"/",
         "routes":
         [
         ]

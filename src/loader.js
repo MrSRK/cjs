@@ -43,7 +43,10 @@ const deploy=(app,config,next)=>
                     views[views.length]=modulesPath+'/'+e+'/view'
                     load(app,mod)
                     if(len==0)
+                    {
+                        routeErrorPages(toolbox.router,config)
                         return next(null,toolbox.router,views)
+                    }
                 })
             })
         })
@@ -55,12 +58,20 @@ const deploy=(app,config,next)=>
 }
 toolbox.route=(name,config,controller)=>
 {
+    // Set Routname
+    let rootname=config.router.rewriteRoot||'/'+name
+    rootname=rootname=='/'?'':rootname
+    // Set Power Root
+    let powerRoot=''
+    if(config.router.powerUser)
+        powerRoot='/'+config.router.powerUser
+    // Add custom roots
     if(config.router.routes)
         config.router.routes.forEach(r=>
         {
-            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(name+r.path),chalk.yellow(r['controller']+'()'))
+            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(rootname+r.path),chalk.yellow(r['controller']+'()'))
             if(controller[r['controller']])
-                toolbox.router[r.method]('/'+name+r.path,controller[r['controller']])
+                toolbox.router[r.method]('/'+rootname+r.path,controller[r['controller']])
         })
     if(config.router.gustUserDefaultRoutes)
     {
@@ -71,13 +82,13 @@ toolbox.route=(name,config,controller)=>
                     "method":"get",
                     "status":200,
                     "path":"/",
-                    "controller":"list"
+                    "controller":"pug_list"
                 },
                 {
                     "method":"get",
                     "status":200,
-                    "path":"/show/:_id",
-                    "controller":"show"
+                    "path":"/:_id",
+                    "controller":"pug_show"
                 }
             ],
             api:
@@ -85,22 +96,22 @@ toolbox.route=(name,config,controller)=>
                 {
                     "method":"get",
                     "status":200,
-                    "path":"/list",
-                    "controller":"apiList"
+                    "path":"/",
+                    "controller":"json_find"
                 },
                 {
                     "method":"get",
                     "status":200,
-                    "path":"/show/:_id",
-                    "controller":"apiShow"
+                    "path":"/:_id",
+                    "controller":"json_findById"
                 }
             ]
         }
         guestRoutes.pug.forEach(r=>
         {
-            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey('/'+name+r.path),chalk.yellow(r['controller']+'()'))
+            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(rootname+r.path),chalk.yellow(r['controller']+'()'))
             if(controller[r['controller']])
-                toolbox.router[r.method]('/'+name+r.path,controller[r['controller']])
+                toolbox.router[r.method](rootname+r.path,controller[r['controller']])
         })
         guestRoutes.api.forEach(r=>
         {
@@ -109,28 +120,29 @@ toolbox.route=(name,config,controller)=>
                 toolbox.router[r.method]('/api/'+name+r.path,controller[r['controller']])
         })
     }
+    let userRouts={}
     if(config.router.userRoutes)
     {
-        const userRouts={
+        userRouts={
             pug:
             [
                 {
                     "method":"get",
                     "status":200,
                     "path":"/signIn",
-                    "controller":"signIn"
+                    "controller":"pug_signIn"
                 },
                 {
                     "method":"get",
                     "status":200,
                     "path":"/signUp",
-                    "controller":"signUp"
+                    "controller":"pug_signUp"
                 },
                 {
                     "method":"get",
                     "status":200,
                     "path":"/signOut",
-                    "controller":"signOut"
+                    "controller":"pug_signOut"
                 },
             ],
             api:
@@ -138,95 +150,98 @@ toolbox.route=(name,config,controller)=>
                 {
                     "method":"post",
                     "status":200,
-                    "path":"/signIn",
-                    "controller":"apiSignIn"
-                },
-                {
-                    "method":"put",
-                    "status":200,
-                    "path":"/signUp",
-                    "controller":"apiSignUp"
-                },
-                {
-                    "method":"post",
-                    "status":200,
-                    "path":"/signOut",
-                    "controller":"apiSignOut"
+                    "path":"/authentication",
+                    "controller":"json_authentication"
                 },
             ]
         }
-        let powerRoot=''
-        if(config.router.powerUser)
-            powerRoot='/'+config.router.powerUser
-        let us=[]
-        if(config.router.powerUser)
-        {
-            us.pug=userRouts.pug.concat([
-                {
-                    "method":"get",
-                    "status":200,
-                    "path":"/",
-                    "controller":"table"
-                },
-                {
-                    "method":"get",
-                    "status":200,
-                    "path":"/edit/:_id",
-                    "controller":"edit"
-                },
-                {
-                    "method":"get",
-                    "status":200,
-                    "path":"/new",
-                    "controller":"new"
-                },
-            ])
-            us.api=userRouts.api.concat([
-                {
-                    "method":"get",
-                    "status":200,
-                    "path":"/table",
-                    "controller":"apiTable"
-                },
-                {
-                    "method":"put",
-                    "status":200,
-                    "path":"/new/",
-                    "controller":"apiNew"
-                },
-                {
-                    "method":"patch",
-                    "status":200,
-                    "path":"/edit/:_id",
-                    "controller":"apiEdit"
-                },
-                {
-                    "method":"delete",
-                    "status":200,
-                    "path":"/delete/:_id",
-                    "controller":"apiDelete"
-                },
-            ])
-        }
-        else
-            us=userRouts
-        us.pug.forEach(r=>
-        {
-            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/'+name+r.path),chalk.yellow(r['controller']+'()'))
-            if(controller[r['controller']])
-                toolbox.router[r.method](powerRoot+'/'+name+r.path,controller[r['controller']])
-        })
-        us.api.forEach(r=>
-        {
-            console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api/'+name+r.path),chalk.yellow(r['controller']+'()'))
-            if(controller[r['controller']])
-                toolbox.router[r.method](powerRoot+'/api/'+name+r.path,controller[r['controller']])
-        })
     }
+    else
+        userRouts={
+            pug:[],
+            api:[]
+        }
+    let us=[]
+    if(config.router.powerUser)
+    {
+        us.pug=userRouts.pug.concat([
+            {
+                "method":"get",
+                "status":200,
+                "path":"/",
+                "controller":"pug_table"
+            },
+            {
+                "method":"get",
+                "status":200,
+                "path":"/update/:_id",
+                "controller":"pug_edit"
+            },
+            {
+                "method":"get",
+                "status":200,
+                "path":"/insert",
+                "controller":"pug_new"
+            },
+        ])
+        us.api=userRouts.api.concat([
+            {
+                "method":"get",
+                "status":200,
+                "path":"/",
+                "controller":"json_auth_find"
+            },
+            {
+                "method":"get",
+                "status":200,
+                "path":"/:_id",
+                "controller":"json_auth_findById"
+            },
+            {
+                "method":"put",
+                "status":200,
+                "path":"/insert/",
+                "controller":"json_auth_save"
+            },
+            {
+                "method":"patch",
+                "status":200,
+                "path":"/update/:_id",
+                "controller":"json_auth_findByIdAndUpdate"
+            },
+            {
+                "method":"delete",
+                "status":200,
+                "path":"/delete/:_id",
+                "controller":"json_auth_findByIdAndDelete"
+            },
+        ])
+    }
+    else
+        us=userRouts
+    us.pug.forEach(r=>
+    {
+        console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/'+name+r.path),chalk.yellow(r['controller']+'()'))
+        if(controller[r['controller']])
+            toolbox.router[r.method](powerRoot+'/'+name+r.path,controller[r['controller']])
+    })
+    us.api.forEach(r=>
+    {
+        console.log("| [%s] Attach router [%s] '%s' at controller's function %s",chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api'+rootname+r.path),chalk.yellow(r['controller']+'()'))
+        if(controller[r['controller']])
+            toolbox.router[r.method](powerRoot+'/api'+rootname+r.path,controller[r['controller']])
+    })
     return true
 }
 const load=(app,mod)=>
 {
     return modules[modules.length]=require(mod.index)(toolbox,mod.name)
+}
+const routeErrorPages=(router,config)=>
+{
+    return router.get('/error',(req,res,next)=>
+    {
+        return res.status(200).json({name:'default error page'})
+    })
 }
 module.exports.deploy=deploy
