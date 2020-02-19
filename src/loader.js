@@ -250,7 +250,7 @@ const load=(app,mod)=>
 }
 const routeErrorPages=(router,config)=>
 {
-	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('PUG'),chalk.red('ERROR'),chalk.blue('GET'),chalk.grey('/error'))
+	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('pug'),chalk.red('error'),chalk.blue('get'),chalk.grey('/error'))
 	return router.get('/error',(req,res,next)=>
 	{
 		return res.status(200).json({name:'default error page'})
