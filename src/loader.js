@@ -160,6 +160,13 @@ toolbox.route=(name,config,controller)=>
 					"path":"/authentication",
 					"controller":"json_authentication"
 				},
+				{
+					"method":"post",
+					"status":200,
+					"path":"/token",
+					"controller":"json_auth_request"
+				},
+
 			]
 		}
 	}
@@ -195,31 +202,31 @@ toolbox.route=(name,config,controller)=>
 			{
 				"method":"get",
 				"status":200,
-				"path":"/",
+				"path":"/find",
 				"controller":"json_auth_find"
 			},
 			{
 				"method":"get",
 				"status":200,
-				"path":"/:_id",
+				"path":"/findById/:_id",
 				"controller":"json_auth_findById"
 			},
 			{
 				"method":"put",
 				"status":200,
-				"path":"/insert",
+				"path":"/save",
 				"controller":"json_auth_save"
 			},
 			{
 				"method":"patch",
 				"status":200,
-				"path":"/update/:_id",
+				"path":"/findByIdAndUpdate/:_id",
 				"controller":"json_auth_findByIdAndUpdate"
 			},
 			{
 				"method":"delete",
 				"status":200,
-				"path":"/delete/:_id",
+				"path":"/findByIdAndDelete/:_id",
 				"controller":"json_auth_findByIdAndDelete"
 			},
 		])
