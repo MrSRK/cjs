@@ -25,9 +25,11 @@ app.config(['$qProvider','$httpProvider',($qProvider,$httpProvider)=>
     $qProvider.errorOnUnhandledRejections(false)
 	$httpProvider.interceptors.push('httpRequestInterceptor')
 }])
+
 /**
  * Main site default controller
  */
 app.controller("page-handler",['$scope','$http','$interval',($scope,$http,$interval)=>
 {
+     
 }])

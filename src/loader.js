@@ -3,10 +3,11 @@ const chalk=require('chalk')
 const path=require('path')
 const fs=require('fs')
 const express=require('express')
-const modules=[]
+const moduleMenu=[]
 const toolbox={}
 const views=[path.join(__dirname,'../view')]
 const controller=require('./core/controller')
+let modules=[]
 const deploy=(app,config,next)=>
 {
 	try
@@ -40,6 +41,7 @@ const deploy=(app,config,next)=>
 						path:modulesPath+'/'+e,
 						index:modulesPath+'/'+e+'/index.js'
 					}
+					moduleMenu[moduleMenu.length]=mod
 					views[views.length]=modulesPath+'/'+e+'/view'
 					load(app,mod)
 					if(len==0)
@@ -244,10 +246,16 @@ toolbox.route=(name,config,controller)=>
 	us.api.forEach(r=>
 	{
 		if(controller[r['controller']])
-		{
-			console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api'+rootname+r.path),chalk.yellow(r['controller']+'()'))
-			toolbox.router[r.method](powerRoot+'/api'+rootname+r.path,controller[r['controller']])
-		}
+			if(r['controller']!='json_auth_request'&&r['controller']!='json_authentication')
+			{
+				console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api'+rootname+r.path),chalk.yellow(r['controller']+'()'))
+				toolbox.router[r.method](powerRoot+'/api'+rootname+r.path,toolbox.controller.json_auth_check_middleware,controller[r['controller']])
+			}
+			else
+			{
+				console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api'+rootname+r.path),chalk.yellow(r['controller']+'()'))
+				toolbox.router[r.method](powerRoot+'/api'+rootname+r.path,controller[r['controller']])
+			}
 	})
 	return true
 }
@@ -257,10 +265,22 @@ const load=(app,mod)=>
 }
 const routeErrorPages=(router,config)=>
 {
-	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('pug'),chalk.red('error'),chalk.blue('get'),chalk.grey('/error'))
-	return router.get('/error',(req,res,next)=>
+	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('pug'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin'))
+	router.get('/admin',(req,res,next)=>
 	{
-		return res.status(200).json({name:'default error page'})
+		return res.status(200).render('admin',{
+			title:'Admin Page',
+			moduleMenu:moduleMenu
+		})
 	})
+	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('pug'),chalk.red('error'),chalk.blue('get'),chalk.grey('/error'))
+	router.get('/error',(req,res,next)=>
+	{
+		return res.status(500).render('error',{
+			title:'Admin Page',
+			menu:moduleMenu
+		})
+	})
+	return true
 }
 module.exports.deploy=deploy

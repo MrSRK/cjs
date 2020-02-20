@@ -1,0 +1,25 @@
+nav.navbar.navbar-expand-lg.navbar-light.bg-light
+	a.navbar-brand.text-muted(href='/admin',data-click="passTheSalt()") Dashboard
+	button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+		span.navbar-toggler-icon
+	#navbarSupportedContent.collapse.navbar-collapse
+		ul.navbar-nav.mr-auto
+			if menu
+				each m in menu
+					li.nav-item.active.text-capitalize
+						a.nav-link(href=m.name)=m.name
+		ul.navbar-nav.ml-auto(data-ng-if="token")
+			li.nav-item.active(data-ng-if="user")
+				span.nav-link
+					small.text-muted.mr-1 Wellcome
+					strong.small {{user.name}}
+					span.small.px-2
+						| (
+						strong(data-ng-if="user.m<10") 0
+						strong(data-ng-bind="user.m")
+						|m : 
+						strong(data-ng-if="user.s<10") 0
+						strong(data-ng-bind="user.s")
+						|s )
+			li.nav-item.active
+				a.nav-link(href='/administrator/administrator/signOut',data-ng-click="signOut()") Sign Out

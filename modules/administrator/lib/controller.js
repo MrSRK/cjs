@@ -21,6 +21,7 @@ const controller=(toolbox,name)=>
 			'json_findById',
 			'json_authentication',
 			'json_auth_request',
+			'json_auth_check',
 			'json_auth_find',
 			'json_auth_findById',
 			'json_auth_save',

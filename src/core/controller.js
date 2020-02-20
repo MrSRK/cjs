@@ -36,7 +36,7 @@ defaultRoutes.pug.forEach(f=>
 		{
 			return res.status(200).render(f.replace('pug_',''),
 			{
-				title:name.substr(0,1).toUpperCase()+name.substr(1)+' '+f.substr(0,1).toUpperconstCase()+f.substr(1)+' Page',
+				title:name.substr(0,1).toUpperCase()+name.substr(1)+' '+f.substr(0,1).toUpperCase()+f.substr(1)+' Page',
 				name:name,
 				schema:schema
 			})
@@ -113,7 +113,7 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 {
 	try
 	{
-		const body={}
+		let body={}
 		if(req.body)
 			body=req.body
 		if(body.signIn)
@@ -183,7 +183,8 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		console.log(error)
+		return res.status(500).json({status:false,error:error})
 	}
 }
 api.json_auth_find=(toolbox,Model,schema,name,req,res)=>
@@ -360,29 +361,29 @@ api.json_auth_request=(toolbox,Model,schema,name,req,res)=>
 		return res.status(401).json({status:false,error:error})
 	}
 }
-api.json_auth_check=(req,res,next)=>
+module.exports.json_auth_check_middleware=(req,res,next)=>
 {
 	try
 	{
 		if(!req.headers.authorization)
-			return res.status(401).json({status:false,error:{name:'Error',message:'Unauthorized Access (Undefined Authorization Header)'}})
+			throw {name:'Error',message:'Unauthorized Access (Undefined Authorization Header)'}
 		const token=req.headers.authorization.split(" ")[1]
 		if(!token)
-			return res.status(401).json({status:false,error:{name:'Error',message:'Unauthorized Access (Unsupported Header)'}})
+			throw {name:'Error',message:'Unauthorized Access (Unsupported Header)'}
 		const decode=jwtDecode(token)
 		if(!decode.name)
-			return res.status(401).json({status:false,error:{name:'Error',message:'Unauthorized Access (Unsupported Token)'}})
+			throw {name:'Error',message:'Unauthorized Access (Unsupported Token)'}
 		const privateKey=(process.env.JWT_KEY||'10')+decode.name
 		return jwt.verify(token,privateKey,(error,d)=>
 		{
 			if(error)
-				return res.status(401).json({status:false,error:{name:'Error',message:'Token no longer valid'}})
-			return res.status(401).json({status:true})
+				throw {name:'Error',message:'Token no longer valid'}
+			return next()
 		})
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		return res.status(401).json({status:false,error:error})
 	}
 }
 module.exports.pug=pug
