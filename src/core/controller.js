@@ -38,7 +38,7 @@ defaultRoutes.pug.forEach(f=>
 			{
 				title:name.substr(0,1).toUpperCase()+name.substr(1)+' '+f.substr(0,1).toUpperCase()+f.substr(1)+' Page',
 				name:name,
-				schema:schema
+				schema:schema,
 			})
 		}
 	}
@@ -47,7 +47,7 @@ defaultRoutes.pug.forEach(f=>
 		return res.status(500).render('pug_500',
 		{
 			title:'Error 500 Page',
-			error:error
+			error:error,
 		})
 	}
 })

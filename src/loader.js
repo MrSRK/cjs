@@ -46,7 +46,7 @@ const deploy=(app,config,next)=>
 					load(app,mod)
 					if(len==0)
 					{
-						routeErrorPages(toolbox.router,config)
+						routeStaticPages(toolbox.router,config)
 						return next(null,toolbox.router,views)
 					}
 				})
@@ -263,22 +263,37 @@ const load=(app,mod)=>
 {
 	return modules[modules.length]=require(mod.index)(toolbox,mod.name)
 }
-const routeErrorPages=(router,config)=>
+const routeStaticPages=(router,config)=>
 {
-	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('pug'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin'))
+	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('API'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin/api'))
+	let menu=[]
+	moduleMenu.forEach(r=>
+	{
+		menu.push({
+			url:r.name,
+			"root-url":'/admin/'+r.name,
+			name:r.name.substr(0,1).toUpperCase()+r.name.substr(1),
+			title:r.name.substr(0,1).toUpperCase()+r.name.substr(1)+' Handler Page'
+		})
+	})
+	router.get('/admin/api',(req,res,next)=>
+	{
+		res.status(200).json(menu)
+	})
+	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.red('PUG'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin'))
 	router.get('/admin',(req,res,next)=>
 	{
 		return res.status(200).render('admin',{
 			title:'Admin Page',
-			moduleMenu:moduleMenu
+			menu:menu
 		})
 	})
-	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('pug'),chalk.red('error'),chalk.blue('get'),chalk.grey('/error'))
+	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.red('PUG'),chalk.red('error'),chalk.blue('get'),chalk.grey('/error'))
 	router.get('/error',(req,res,next)=>
 	{
 		return res.status(500).render('error',{
 			title:'Admin Page',
-			menu:moduleMenu
+			menu:menu
 		})
 	})
 	return true

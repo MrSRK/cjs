@@ -121,7 +121,8 @@ const deploy=async(config,next)=>
         // Static Directories
         app.use('/',express.static(path.join(__dirname,'../public')))
         app.use('/images',express.static(path.join(__dirname,'../upload/images')))
-		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/angular')))
+        app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/angular')))
+        app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/angular-cookies')))
 		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/popper.js/dist/umd')))
 		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/bootstrap/dist/js')))
 		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/jquery/dist')))

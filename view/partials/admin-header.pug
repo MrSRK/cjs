@@ -1,13 +1,11 @@
 nav.navbar.navbar-expand-lg.navbar-light.bg-light
-	a.navbar-brand.text-muted(href='/admin',data-click="passTheSalt()") Dashboard
+	a.navbar-brand.text-muted(href='/admin') Dashboard
 	button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
 		span.navbar-toggler-icon
 	#navbarSupportedContent.collapse.navbar-collapse
-		ul.navbar-nav.mr-auto
-			if menu
-				each m in menu
-					li.nav-item.active.text-capitalize
-						a.nav-link(href=m.name)=m.name
+		ul.navbar-nav.mr-auto(data-ng-init="admin.init.menu()")
+			li.nav-item.active.text-capitalize(data-ng-repeat="menu in admin.data.menu")
+				a.nav-link(ng-href="{{menu.url}}",data-ng-bind="menu.name")
 		ul.navbar-nav.ml-auto(data-ng-if="token")
 			li.nav-item.active(data-ng-if="user")
 				span.nav-link
