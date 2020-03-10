@@ -4,37 +4,12 @@ angular.module('app.cjs', ['ng'])
 {
 	//########################################
 	const workers={}
-	const catchWorker=class
-	{
-		constructor(path,args)
-		{
-			try
-			{
-				if(!('serviceWorker' in navigator))
-					throw new Error('serviceWorker unavailable')
-				if(args)
-					path+='?manifest='+encodeURIComponent(btoa(JSON.stringify(args)))
-				navigator.serviceWorker
-				.register(path)
-				.then(registration=>
-				{
-					console.log('ServiceWorker registration successful with scope: ', registration.scope);
-				},
-				error=>
-				{
-					throw error
-				})
-			}
-			catch(error)
-			{
-				console.error(error)
-			}
-		}
-	}
 	const jsonWorker=class
 	{
 		worker=null
 		csrf=null
+		token=null
+		load=0
 		constructor(path,token)
 		{
 			try
@@ -48,51 +23,62 @@ angular.module('app.cjs', ['ng'])
 				console.log(error)
 			}
 		}
+		setToken=token=>
+		{
+			this.token=token
+		}
 		delete=(url,data,next)=>
 		{
-			const args={url:url,data:{params:data}}
+			const args={url:url,data:{params:data,headers:{"Authorization":'Bearer '+this.token}}}
 			return this.call('delete',args,(error,data)=>
 			{
-				return next(error,data)
+				return next(error,data.data.data)
 			})
 		}
 		patch=(url,data,next)=>
 		{
-			const args={url:url,data:{body:data}}
+			const args={url:url,data:{body:data,headers:{"Authorization":'Bearer '+this.token}}}
 			return this.call('patch',args,(error,data)=>
 			{
-				return next(error,data)
+				return next(error,data.data.data)
 			})
 		}
 		put=(url,data,next)=>
 		{
-			const args={url:url,data:{body:data}}
+			const args={url:url,data:{body:data,headers:{"Authorization":'Bearer '+this.token}}}
 			return this.call('put',args,(error,data)=>
 			{
-				return next(error,data)
+				return next(error,data.data.data)
 			})
 		}
 		post=(url,data,next)=>
 		{
-			const args={url:url,data:{body:data}}
+			const args={url:url,data:{body:data,headers:{"Authorization":'Bearer '+this.token}}
+			}
 			return this.call('post',args,(error,data)=>
 			{
-				return next(error,data)
+				return next(error,data.data.data)
 			})
 		}
 		get=(url,data,next)=>
 		{
-			const args={url:url,data:{params:data}}
+			const args={
+				url:url,
+				data:{
+					params:data,
+					headers:{"Authorization":'Bearer '+this.token}
+				}
+			}
 			return this.call('get',args,(error,data)=>
 			{
-				return next(error,data)
+				return next(error,data.data.data)
 			})
 		}
 		call=(job,args,next)=>
 		{
 			try
 			{
-				//console.log(args)
+				this.load++
 				if(!args.data.headers)
 					args.data.headers=[]
 				if(this.csrf)
@@ -102,6 +88,7 @@ angular.module('app.cjs', ['ng'])
 				this.worker.postMessage({job:job,args:args})
 				return this.worker.onmessage=ret=>
 				{
+					this.load--
 					return next(null,ret)
 				}
 			}
@@ -112,7 +99,6 @@ angular.module('app.cjs', ['ng'])
 		}
 	}
 	workers.json=jsonWorker
-	workers.catch=catchWorker
 	this.$get=[_=>
 	{
 		return{workers}

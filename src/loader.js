@@ -116,7 +116,7 @@ toolbox.route=(name,config,controller)=>
 			if(controller[r['controller']])
 			{
 				r.path=r.path?r.path:'/'
-				console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.red('PUG'),chalk.red(name),chalk.blue(r.method),chalk.grey(rootname+r.path),chalk.yellow(r['controller']+'()'))
+				console.log("| [%s][%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.red('PUG'),chalk.gray('AUTH'),chalk.red(name),chalk.blue(r.method),chalk.grey(rootname+r.path),chalk.yellow(r['controller']+'()'))
 				toolbox.router[r.method](rootname+r.path,controller[r['controller']])
 			}
 		})
@@ -124,7 +124,7 @@ toolbox.route=(name,config,controller)=>
 		{
 			if(controller[r['controller']])
 			{
-				console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.red(name),chalk.blue(r.method),chalk.grey('/api/'+name+r.path),chalk.yellow(r['controller']+'()'))
+				console.log("| [%s][%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.gray('AUTH'),chalk.red(name),chalk.blue(r.method),chalk.grey('/api/'+name+r.path),chalk.yellow(r['controller']+'()'))
 				toolbox.router[r.method]('/api/'+name+r.path,controller[r['controller']])
 			}
 		})
@@ -239,7 +239,7 @@ toolbox.route=(name,config,controller)=>
 	{
 		if(controller[r['controller']])
 		{
-			console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.red('PUG'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/'+name+r.path),chalk.yellow(r['controller']+'()'))
+			console.log("| [%s][%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.red('PUG'),chalk.gray('AUTH'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/'+name+r.path),chalk.yellow(r['controller']+'()'))
 			toolbox.router[r.method](powerRoot+'/'+name+r.path,controller[r['controller']])
 		}
 	})
@@ -248,12 +248,12 @@ toolbox.route=(name,config,controller)=>
 		if(controller[r['controller']])
 			if(r['controller']!='json_auth_request'&&r['controller']!='json_authentication')
 			{
-				console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api'+rootname+r.path),chalk.yellow(r['controller']+'()'))
+				console.log("| [%s][%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.green('AUTH'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api'+rootname+r.path),chalk.yellow(r['controller']+'()'))
 				toolbox.router[r.method](powerRoot+'/api'+rootname+r.path,toolbox.controller.json_auth_check_middleware,controller[r['controller']])
 			}
 			else
 			{
-				console.log("| [%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api'+rootname+r.path),chalk.yellow(r['controller']+'()'))
+				console.log("| [%s][%s][%s] Attach router [%s] '%s' at controller's function %s",chalk.green('API'),chalk.gray('AUTH'),chalk.red(name),chalk.blue(r.method),chalk.grey(powerRoot+'/api'+rootname+r.path),chalk.yellow(r['controller']+'()'))
 				toolbox.router[r.method](powerRoot+'/api'+rootname+r.path,controller[r['controller']])
 			}
 	})
@@ -265,7 +265,7 @@ const load=(app,mod)=>
 }
 const routeStaticPages=(router,config)=>
 {
-	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.green('API'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin/api'))
+	console.log("| [%s][%s][%s] Attach router [%s] '%s'",chalk.green('API'),chalk.gray('AUTH'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin/api'))
 	let menu=[]
 	moduleMenu.forEach(r=>
 	{
@@ -276,11 +276,11 @@ const routeStaticPages=(router,config)=>
 			title:r.name.substr(0,1).toUpperCase()+r.name.substr(1)+' Handler Page'
 		})
 	})
-	router.get('/admin/api',(req,res,next)=>
+	router.get('/admin/api',toolbox.controller.json_auth_check_middleware,(req,res,next)=>
 	{
 		res.status(200).json(menu)
 	})
-	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.red('PUG'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin'))
+	console.log("| [%s][%s][%s] Attach router [%s] '%s'",chalk.red('PUG'),chalk.gray('AUTH'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin'))
 	router.get('/admin',(req,res,next)=>
 	{
 		return res.status(200).render('admin',{
@@ -288,7 +288,7 @@ const routeStaticPages=(router,config)=>
 			menu:menu
 		})
 	})
-	console.log("| [%s][%s] Attach router [%s] '%s'",chalk.red('PUG'),chalk.red('error'),chalk.blue('get'),chalk.grey('/error'))
+	console.log("| [%s][%s][%s] Attach router [%s] '%s'",chalk.red('PUG'),chalk.gray('AUTH'),chalk.red('error'),chalk.blue('get'),chalk.grey('/error'))
 	router.get('/error',(req,res,next)=>
 	{
 		return res.status(500).render('error',{

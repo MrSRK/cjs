@@ -88,7 +88,7 @@ const deploy=async(config,next)=>
             return true
         })
         // Set Security (Lusca)
-        security.deploy(config,(status,error,property)=>
+       /* security.deploy(config,(status,error,property)=>
         {
             if(error)
                 throw error
@@ -106,7 +106,7 @@ const deploy=async(config,next)=>
             app.disable('x-powered-by')
             console.log("| %s  [%s] \t\t %s",chalk.green('↳'),chalk.cyan('Security'),chalk.magenta('Loaded successfully'))
             return true
-         })
+         })*/
         // Set SASS (CSS)
         sass.deploy(config,(status,error,property)=>
         {
@@ -119,15 +119,15 @@ const deploy=async(config,next)=>
          })
          next(null,app)
         // Static Directories
-        app.use('/',express.static(path.join(__dirname,'../public')))
-        app.use('/images',express.static(path.join(__dirname,'../upload/images')))
-        app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/angular')))
-        app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/angular-cookies')))
-		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/popper.js/dist/umd')))
-		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/bootstrap/dist/js')))
-		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/jquery/dist')))
+        app.use('/',express.static(path.join(__dirname,'../public'),{maxAge:5184000}))
+        app.use('/images',express.static(path.join(__dirname,'../upload/images'),{maxAge:5184000}))
+        app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/angular'),{maxAge:5184000}))
+        app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/angular-cookies'),{maxAge:5184000}))
+		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/popper.js/dist/umd'),{maxAge:5184000}))
+		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/bootstrap/dist/js'),{maxAge:5184000}))
+		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/jquery/dist'),{maxAge:5184000}))
 		app.use('/webfonts',express.static(path.join(__dirname,'../node_modules/@fortawesome/fontawesome-free/webfonts')))
-		app.use('/favicon.ico',express.static(path.join(__dirname,'../public/images/favicon.ico')))
+		app.use('/favicon.ico',express.static(path.join(__dirname,'../public/images/favicon.ico'),{maxAge:5184000}))
     }
     catch(error)
     {

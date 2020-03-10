@@ -118,6 +118,13 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 			body=req.body
 		if(body.signIn)
 		{
+			/*let model=new Model({
+				active:true,
+				name:'Ρουμπεδάκης Στυλιανός',
+				email:'rubes6@hotmail.com',
+				password:'123'
+			})
+			model.save()*/
 			if(!req.body.data||!req.body.data.email)
 				return res.status(401).json({status:false,error:{name:"Error",message:"Email or Password not set"}})
 			if(!req.body.data||!req.body.data.password)
@@ -338,8 +345,7 @@ api.json_auth_request=(toolbox,Model,schema,name,req,res)=>
 				return res.status(401).json({status:false,error:{name:"Error",message:"User token not set"}})
 		const privateKey=(process.env.JWT_KEY||'10')+name
 		const expires=process.env.JWT_REQUEST_TOKEN_EXPIRES||"1h"
-		console.log(req.body.userToken)
-		return jwt.verify(req.body.userToken,(error,decoded)=>
+		return jwt.verify(req.body.userToken,privateKey,(error,decoded)=>
 		{
 			if(error)
 				return res.status(401).json({status:false,error:{name:'Error',message:'Unauthorized Access'}})

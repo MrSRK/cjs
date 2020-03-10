@@ -1,31 +1,11 @@
 /**
+ * GLOBAL CONST
+ */
+const MAX_WORKER_LOAD=5
+/**
  * Initialize angular module
  */
 const app=angular.module("app",['ngCookies','app.cjs'])
-/**
- * If login token exists: set Authorization token to all requests
- */
-app.factory('httpRequestInterceptor',()=>
-{
-	return {
-		request:config=>
-		{
-			const token=localStorage.getItem('token')
-			if(typeof token!=undefined&&token)
-				config.headers['Authorization']='Bearer '+token
-			return config
-		}
-	}
-})
-/**
- *
- */
-app.config(['$qProvider','$httpProvider',($qProvider,$httpProvider)=>
-{
-	$qProvider.errorOnUnhandledRejections(false)
-	$httpProvider.interceptors.push('httpRequestInterceptor')
-}])
-
 /**
  * Main site default controller
  */
@@ -33,20 +13,89 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 {
 	try
 	{
-		const init_admin_menu=_=>
+		const authCheck=_=>
 		{
-			jsonWorken.get('/admin/api',null,(error,doc)=>
+			const uToken=localStorage.getItem('user-token')
+			if(!uToken)
+				return false
+			return picWorker().post('/admin/api/administrator/token',{userToken:uToken},(error,doc)=>
 			{
 				if(error)
-					console.log(error)
-				$scope.admin.data.menu=doc.data.data
+					return false
+				if(!doc.status)
+					return false
+				if(!doc.token)
+					return false
+				localStorage.setItem('token',doc.token)
+				//window.location.href=window.location.href
+				return true
+			})
+		}
+		const init_admin_menu=_=>
+		{
+			return picWorker().get('/admin/api',null,(error,doc)=>
+			{
+				if(error)
+					return console.log(error)
+				if(!doc.status)
+					return authCheck()
+				$scope.admin.data.menu=doc
 				$scope.$apply()
 			})
 		}
-		const catchWorken=new $cjs.workers.catch('../js/cache.service-worker.js',{url:"/json/manifest.json"});
-		const jsonWorken=new $cjs.workers.json('../js/xhr.json.web-worker.js',$cookies.get('XSRF-TOKEN'));
-
+		const workers=[]
+		const picWorker=_=>
+		{
+			const token=localStorage.getItem('token')
+			if(workers.length==0)
+			{
+				workers[0]=new $cjs.workers.json('../js/xhr.json.web-worker.js?worker='+0,$cookies.get('XSRF-TOKEN'))
+				workers[0].setToken(token)
+				return workers[0]
+			}
+			for(i=0;i<workers.length;i++)
+				if(workers[i].load<MAX_WORKER_LOAD)
+				{
+					workers[i].setToken(token)
+					return workers[i]
+				}
+			workers[workers.length]=new $cjs.workers.json('../js/xhr.json.web-worker.js?worker='+i,$cookies.get('XSRF-TOKEN'))
+			workers[workers.length-1].setToken(token)
+			return workers[workers.length-1]
+		}
+		// Auth
+		const admin_signIn=_=>
+		{
+			const args={
+				signIn:true,
+				data:{
+					email:$scope.admin.auth.email,
+					password:$scope.admin.auth.password
+				}
+			}
+			return picWorker().post('/admin/api/administrator/authentication',args,(error,doc)=>
+			{
+				if(error)
+				{
+					$scope.admin.auth.error=error
+					$scope.$apply()
+					return  false
+				}
+				if(error||!doc.status)
+				{
+					$scope.admin.auth.error=doc.error
+					$scope.$apply()
+					return  false
+				}
+				localStorage.setItem('user-token',doc.token)
+				window.location.href="/admin"
+				return true
+			})
+		}
 		$scope.admin={}
+		$scope.admin.auth={}
+		$scope.admin.auth.signIn=admin_signIn
+		
 		$scope.admin.data={}
 		$scope.admin.init={}
 		$scope.admin.init.menu=init_admin_menu

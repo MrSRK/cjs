@@ -1,0 +1,19 @@
+{
+    "name":"cjs-catch",
+    "version":"1.0.5",
+    "urls":
+    [
+        "/js/lib/jquery.min.js",
+        "/js/lib/popper.min.js",
+        "/js/lib/bootstrap.min.js",
+        "/js/lib/angular.min.js",
+        "/js/cjs.molude.angular.js",
+        "/js/lib/angular-cookies.min.js",
+        "/js/admin-main.js",
+        "/js/main.js",
+        "/js/cache.service-worker.js",
+        "/js/xhr.json.web-worker.js",
+        "/favicon.ico",
+        "/css/main.css"
+    ]
+}

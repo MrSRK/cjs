@@ -1,4 +1,25 @@
-extends layout
+extends admin-layout
 block content
-	h1 Sign In
-	
+	.row
+		.col-12.col-lg-3
+		.col-12.col-lg-6
+			form.px-2.py-3.rounded.border.border-primary(data-ng-submit="admin.auth.signIn()")
+				h2.mb-4.text-primary Sign In
+				.alert.alert-danger.small.px-2.py-1(data-ng-if="admin.auth.error")
+					strong(data-ng-bind="admin.auth.error.name")
+					span.mr-1 :
+					span(data-ng-bind="admin.auth.error.message")
+				.alert.alert-info.small.px-2.py-1(data-ng-if="!admin.auth.error")
+					strong System
+					span.mr-1 :
+					span Insert Username & Password
+				.form-group
+					label(for='signIn-email') Email address
+					input#signIn-email.form-control(type='email', aria-describedby='signIn-email-help', placeholder='Enter email',data-ng-model="admin.auth.email")
+					small#signIn-email-help.form-text.text-muted We'll never share your email with anyone else.
+				.form-group
+					label(for='signIn-password') Password
+					input#signIn-password.form-control(type='password', placeholder='Password',data-ng-model="admin.auth.password")
+				.text-right
+					button.btn.btn-primary(type='submit') Sign In
+		.col-12.col-lg-3

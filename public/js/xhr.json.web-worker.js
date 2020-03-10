@@ -5,11 +5,11 @@ onmessage=event=>{
     if(!jobs[job])
         return jobs.notexist(args,(error,data)=>
         {
-            postMessage({error:error,data:data})
+            return postMessage({error:error,data:data})
         })
     return jobs[job](args,(error,data)=>
     {
-        postMessage({error:error,data:data})
+        return postMessage({error:error,data:data})
     })
 }
 const jobs={}
@@ -162,6 +162,9 @@ jobs.get=(args,next)=>
     }
     const http=new XMLHttpRequest()
     http.open("GET",args.url)
+    if(args.data.headers)
+        for(let key in args.data.headers)
+            http.setRequestHeader(key,args.data.headers[key])
     http.send()
     return http.onreadystatechange=e=>
     {

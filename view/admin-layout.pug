@@ -7,18 +7,17 @@ html
 		title #{title} - Administrator Dashboard - CJS
 		link(rel='shortcut icon', href='/favicon.ico')
 		link(rel='stylesheet', href='/css/main.css')
-		link(rel="manifest",href='/json/manifest.json')
+		//link(rel="manifest",href='/json/manifest.json')
 		base(href="/admin/")
+		script(src='/js/lib/jquery.min.js')
+		script(src='/js/lib/popper.min.js')
+		script(src='/js/lib/bootstrap.min.js')
+		script(src='/js/lib/angular.min.js')
+		script(src='/js/cjs.molude.angular.js')
+		script(src='/js/lib/angular-cookies.min.js')
+		script(src='/js/admin-main.js')
 	body(data-ng-app="app",data-ng-controller="page-handler")
 		include partials/admin-header
 		.container.pt-5
 			block content
 		//include partials/footer
-
-		script(defer,src='/js/lib/jquery.min.js')
-		script(defer,src='/js/lib/popper.min.js')
-		script(defer,src='/js/lib/bootstrap.min.js')
-		script(defer,src='/js/lib/angular.min.js')
-		script(defer,src='/js/cjs.molude.angular.js')
-		script(defer,src='/js/lib/angular-cookies.min.js')
-		script(defer,src='/js/admin-main.js')

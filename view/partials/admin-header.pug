@@ -11,13 +11,8 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light
 				span.nav-link
 					small.text-muted.mr-1 Wellcome
 					strong.small {{user.name}}
-					span.small.px-2
-						| (
-						strong(data-ng-if="user.m<10") 0
-						strong(data-ng-bind="user.m")
-						|m : 
-						strong(data-ng-if="user.s<10") 0
-						strong(data-ng-bind="user.s")
-						|s )
 			li.nav-item.active
-				a.nav-link(href='/administrator/administrator/signOut',data-ng-click="signOut()") Sign Out
+				a.nav-link(href='/admin/administrator/signOut') Sign Out
+		ul.navbar-nav.ml-auto(data-ng-if="!token")
+			li.nav-item.active
+				a.nav-link(href='/admin/administrator/signIn') Sign in
