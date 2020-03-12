@@ -29,50 +29,88 @@ angular.module('app.cjs', ['ng'])
 		}
 		delete=(url,data,next)=>
 		{
-			const args={url:url,data:{params:data,headers:{"Authorization":'Bearer '+this.token}}}
-			return this.call('delete',args,(error,data)=>
+			try
 			{
-				return next(error,data.data.data)
-			})
+				const args={url:url,data:{params:data}}
+				if(this.token)
+					args.data.headers={Authorization:'Bearer '+this.token}
+				return this.call('delete',args,(error,data)=>
+				{
+					return next(error,data.data.data)
+				})
+			}
+			catch(error)
+			{
+				return next(error)
+			}
 		}
 		patch=(url,data,next)=>
 		{
-			const args={url:url,data:{body:data,headers:{"Authorization":'Bearer '+this.token}}}
-			return this.call('patch',args,(error,data)=>
+			try
 			{
-				return next(error,data.data.data)
-			})
+				const args={url:url,data:{body:data}}
+				if(this.token)
+					args.data.headers={Authorization:'Bearer '+this.token}
+				return this.call('patch',args,(error,data)=>
+				{
+					return next(error,data.data.data)
+				})
+			}
+			catch(error)
+			{
+				return next(error)
+			}
 		}
 		put=(url,data,next)=>
 		{
-			const args={url:url,data:{body:data,headers:{"Authorization":'Bearer '+this.token}}}
-			return this.call('put',args,(error,data)=>
+			try
 			{
-				return next(error,data.data.data)
-			})
+				const args={url:url,data:{body:data}}
+				if(this.token)
+					args.data.headers={Authorization:'Bearer '+this.token}
+				return this.call('put',args,(error,data)=>
+				{
+					return next(error,data.data.data)
+				})
+			}
+			catch(error)
+			{
+				return next(error)
+			}
 		}
 		post=(url,data,next)=>
 		{
-			const args={url:url,data:{body:data,headers:{"Authorization":'Bearer '+this.token}}
-			}
-			return this.call('post',args,(error,data)=>
+			try
 			{
-				return next(error,data.data.data)
-			})
+				const args={url:url,data:{body:data}}
+				if(this.token)
+					args.data.headers={Authorization:'Bearer '+this.token}
+				return this.call('post',args,(error,data)=>
+				{
+					return next(error,data.data.data)
+				})
+			}
+			catch(error)
+			{
+				return next(error)
+			}
 		}
 		get=(url,data,next)=>
 		{
-			const args={
-				url:url,
-				data:{
-					params:data,
-					headers:{"Authorization":'Bearer '+this.token}
-				}
-			}
-			return this.call('get',args,(error,data)=>
+			try
 			{
-				return next(error,data.data.data)
-			})
+				const args={url:url,data:{params:data}}
+				if(this.token)
+					args.data.headers={Authorization:'Bearer '+this.token}
+				return this.call('get',args,(error,data)=>
+				{
+					return next(error,data.data.data)
+				})
+			}
+			catch(error)
+			{
+				return next(error)
+			}
 		}
 		call=(job,args,next)=>
 		{

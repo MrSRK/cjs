@@ -6,13 +6,13 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light
 		ul.navbar-nav.mr-auto(data-ng-init="admin.init.menu()")
 			li.nav-item.active.text-capitalize(data-ng-repeat="menu in admin.data.menu")
 				a.nav-link(ng-href="{{menu.url}}",data-ng-bind="menu.name")
-		ul.navbar-nav.ml-auto(data-ng-if="token")
-			li.nav-item.active(data-ng-if="user")
-				span.nav-link
-					small.text-muted.mr-1 Wellcome
-					strong.small {{user.name}}
+		ul.navbar-nav.ml-auto(data-ng-if="admin.user")
 			li.nav-item.active
-				a.nav-link(href='/admin/administrator/signOut') Sign Out
-		ul.navbar-nav.ml-auto(data-ng-if="!token")
+				a.nav-link.small(href="#")
+					span.text-muted.mr-1 Wellcome
+					strong {{admin.user.name}}
+			li.nav-item.active
+				a.nav-link.small(href="#",data-ng-click="admin.auth.signOut()") Sign Out
+		ul.navbar-nav.ml-auto(data-ng-if="!admin.user")
 			li.nav-item.active
 				a.nav-link(href='/admin/administrator/signIn') Sign in

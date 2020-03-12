@@ -118,13 +118,16 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 			body=req.body
 		if(body.signIn)
 		{
-			/*let model=new Model({
-				active:true,
-				name:'Ρουμπεδάκης Στυλιανός',
-				email:'rubes6@hotmail.com',
-				password:'123'
-			})
-			model.save()*/
+			/*for(var i=1;i<=50;i++)
+			{
+				let model=new Model({
+					active:true,
+					name:'Ρουμπεδάκης Στυλιανός '+i,
+					email:'web-'+i+'@visionadv.gr',
+					password:'123'
+				})
+				model.save()
+			}*/
 			if(!req.body.data||!req.body.data.email)
 				return res.status(401).json({status:false,error:{name:"Error",message:"Email or Password not set"}})
 			if(!req.body.data||!req.body.data.password)
@@ -309,7 +312,7 @@ api.json_auth_findByIdAndDelete=(toolbox,Model,schema,name,req,res)=>
 	try
 	{
 		if(!ObjectId.isValid(req.params._id))
-			return res.status(500).json({status:true,error:{name:"Error",message:'Invalid Object id'}})
+			return res.status(500).json({status:false,error:{name:"Error",message:'Invalid Object id'}})
 		let where={}
 		if(req.body&&req.body.where)
 			where=req.body.where
@@ -323,20 +326,14 @@ api.json_auth_findByIdAndDelete=(toolbox,Model,schema,name,req,res)=>
 		})
 		.catch(error=>
 		{
-			return res.status(500).json({status:true,error:error})
+			return res.status(500).json({status:false,error:error})
 		})
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		return res.status(500).json({status:false,error:error})
 	}
 }
-//Authorization
-/*
-* 	Two tokens one User (long life) Token and one request (sort life) token
-*	User token by login (email, password)
-*	Request token by user token
- */
 api.json_auth_request=(toolbox,Model,schema,name,req,res)=>
 {
 	try
@@ -389,7 +386,7 @@ module.exports.json_auth_check_middleware=(req,res,next)=>
 	}
 	catch(error)
 	{
-		return res.status(401).json({status:false,error:error})
+		return res.status(401).json({status:false,auth:false,error:error})
 	}
 }
 module.exports.pug=pug

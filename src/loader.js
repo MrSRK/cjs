@@ -278,7 +278,7 @@ const routeStaticPages=(router,config)=>
 	})
 	router.get('/admin/api',toolbox.controller.json_auth_check_middleware,(req,res,next)=>
 	{
-		res.status(200).json(menu)
+		res.status(200).json({status:true,data:menu})
 	})
 	console.log("| [%s][%s][%s] Attach router [%s] '%s'",chalk.red('PUG'),chalk.gray('AUTH'),chalk.red('admin'),chalk.blue('get'),chalk.grey('/admin'))
 	router.get('/admin',(req,res,next)=>
