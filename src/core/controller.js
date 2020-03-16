@@ -132,22 +132,24 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 			body=req.body
 		if(body.signIn)
 		{
-			/*let d=[]
-			for(var i=1;i<=1000;i++)
-			{
-				d.push({
-					active:true,
-					name:'Ρουμπεδάκης Στυλιανός '+i,
-					email:'web-'+i+'@visionadv.gr',
-					password:'123'
+			/*
+				let d=[]
+				for(var i=1;i<=1000;i++)
+				{
+					d.push({
+						active:true,
+						name:'Ρουμπεδάκης Στυλιανός '+i,
+						email:'web-'+i+'@visionadv.gr',
+						password:'123'
+					})
+				}
+				Model.insertMany(d,(ee,dd)=>
+				{
+					if(ee)
+						console.log(ee)
+					console.log(dd)
 				})
-			}
-			Model.insertMany(d,(ee,dd)=>
-			{
-				if(ee)
-					console.log(ee)
-				console.log(dd)
-			})*/
+			*/
 			if(!req.body.data||!req.body.data.email)
 				return res.status(401).json({status:false,error:{name:"Error",message:"Email or Password not set"}})
 			if(!req.body.data||!req.body.data.password)

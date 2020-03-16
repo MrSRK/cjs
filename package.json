@@ -1,6 +1,6 @@
 {
   "name": "vision-cjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Vision Group Nodejs Core 1",
   "main": "app.js",
   "scripts": {
