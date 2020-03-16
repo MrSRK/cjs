@@ -17,6 +17,7 @@ const defaultRoutes={
 	],
 	api:
 	[
+		'json_schema',
 		'json_find',
 		'json_findById',
 		'json_authentication',
@@ -34,11 +35,13 @@ defaultRoutes.pug.forEach(f=>
 	{
 		pug[f]=(toolbox,Model,schema,name,req,res)=>
 		{
+			const _id=req.params._id||null
 			return res.status(200).render(f.replace('pug_',''),
 			{
 				title:name.substr(0,1).toUpperCase()+name.substr(1)+' '+f.substr(0,1).toUpperCase()+f.substr(1)+' Page',
 				name:name,
 				schema:schema,
+				_id:_id
 			})
 		}
 	}
@@ -52,6 +55,17 @@ defaultRoutes.pug.forEach(f=>
 	}
 })
 const api={}
+api.json_schema=(toolbox,Model,schema,name,req,res)=>
+{
+	try
+	{
+		return res.status(200).json({status:true,schema:Model.schema})
+	}
+	catch(error)
+	{
+		return res.status(500).json({status:false,error:error})
+	}
+}
 api.json_find=(toolbox,Model,schema,name,req,res)=>
 {
 	try
@@ -71,12 +85,12 @@ api.json_find=(toolbox,Model,schema,name,req,res)=>
 			return res.status(200).json({status:true,doc:doc})
 		}).catch(error=>
 		{
-			return res.status(500).json({status:true,error:error})
+			return res.status(500).json({status:false,error:error})
 		})
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		return res.status(500).json({status:false,error:error})
 	}
 }
 api.json_findById=(toolbox,Model,schema,name,req,res)=>
@@ -84,7 +98,7 @@ api.json_findById=(toolbox,Model,schema,name,req,res)=>
 	try
 	{
 		if(!ObjectId.isValid(req.params._id))
-			return res.status(500).json({status:true,error:{name:"Error",message:'Invalid Object id'}})
+			return res.status(500).json({status:false,error:{name:"Error",message:'Invalid Object id'}})
 		let where={}
 		if(req.body&&req.body.where)
 			where=req.body.where
@@ -97,16 +111,16 @@ api.json_findById=(toolbox,Model,schema,name,req,res)=>
 		.exec()
 		.then(doc=>
 		{
-			return res.status(200).json({status:true,doc:doc})
+			return res.status(200).json({status:true,doc:doc,schema:Model.schema})
 		})
 		.catch(error=>
 		{
-			return res.status(500).json({status:true,error:error})
+			return res.status(500).json({status:false,error:error})
 		})
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		return res.status(500).json({status:false,error:error})
 	}
 }
 api.json_authentication=(toolbox,Model,schema,name,req,res)=>
@@ -118,16 +132,22 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 			body=req.body
 		if(body.signIn)
 		{
-			/*for(var i=1;i<=50;i++)
+			/*let d=[]
+			for(var i=1;i<=1000;i++)
 			{
-				let model=new Model({
+				d.push({
 					active:true,
 					name:'Ρουμπεδάκης Στυλιανός '+i,
 					email:'web-'+i+'@visionadv.gr',
 					password:'123'
 				})
-				model.save()
-			}*/
+			}
+			Model.insertMany(d,(ee,dd)=>
+			{
+				if(ee)
+					console.log(ee)
+				console.log(dd)
+			})*/
 			if(!req.body.data||!req.body.data.email)
 				return res.status(401).json({status:false,error:{name:"Error",message:"Email or Password not set"}})
 			if(!req.body.data||!req.body.data.password)
@@ -181,7 +201,7 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 			return model.save((error,data)=>
 			{
 				if(error)
-					return res.status(500).json({status:true,error:error})
+					return res.status(500).json({status:false,error:error})
 				var data=data.toObject()
 				if(data.password)
 					delete data.password
@@ -218,7 +238,7 @@ api.json_auth_find=(toolbox,Model,schema,name,req,res)=>
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		return res.status(500).json({status:false,error:error})
 	}
 }
 api.json_auth_findById=(toolbox,Model,schema,name,req,res)=>
@@ -226,7 +246,7 @@ api.json_auth_findById=(toolbox,Model,schema,name,req,res)=>
 	try
 	{
 		if(!ObjectId.isValid(req.params._id))
-			return res.status(500).json({status:true,error:{name:"Error",message:'Invalid Object id'}})
+			return res.status(500).json({status:false,error:{name:"Error",message:'Invalid Object id'}})
 		let where={}
 		if(req.body&&req.body.where)
 			where=req.body.where
@@ -237,16 +257,16 @@ api.json_auth_findById=(toolbox,Model,schema,name,req,res)=>
 		.exec()
 		.then(doc=>
 		{
-			return res.status(200).json({status:true,doc:doc})
+			return res.status(200).json({status:true,doc:doc,schema:Model.schema})
 		})
 		.catch(error=>
 		{
-			return res.status(500).json({status:true,error:error})
+			return res.status(500).json({status:false,error:error})
 		})
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		return res.status(500).json({status:false,error:error})
 	}
 }
 api.json_auth_save=(toolbox,Model,schema,name,req,res)=>
@@ -260,7 +280,7 @@ api.json_auth_save=(toolbox,Model,schema,name,req,res)=>
 		return model.save((error,data)=>
 		{
 			if(error)
-				return res.status(500).json({status:true,error:error})
+				return res.status(500).json({status:false,error:error})
 			var data=data.toObject()
 			if(data.password)
 				delete data.password
@@ -269,7 +289,7 @@ api.json_auth_save=(toolbox,Model,schema,name,req,res)=>
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		return res.status(500).json({status:false,error:error})
 	}
 }
 api.json_auth_findByIdAndUpdate=(toolbox,Model,schema,name,req,res)=>
@@ -277,7 +297,7 @@ api.json_auth_findByIdAndUpdate=(toolbox,Model,schema,name,req,res)=>
 	try
 	{
 		if(!ObjectId.isValid(req.params._id))
-			return res.status(500).json({status:true,error:{name:"Error",message:'Invalid Object id'}})
+			return res.status(500).json({status:false,error:{name:"Error",message:'Invalid Object id'}})
 		let where={}
 		if(req.body&&req.body.where)
 			where=req.body.where
@@ -299,12 +319,12 @@ api.json_auth_findByIdAndUpdate=(toolbox,Model,schema,name,req,res)=>
 		})
 		.catch(error=>
 		{
-			return res.status(500).json({status:true,error:error})
+			return res.status(500).json({status:false,error:error})
 		})
 	}
 	catch(error)
 	{
-		return res.status(500).json({status:true,error:error})
+		return res.status(500).json({status:false,error:error})
 	}
 }
 api.json_auth_findByIdAndDelete=(toolbox,Model,schema,name,req,res)=>

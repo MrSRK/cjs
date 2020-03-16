@@ -3,7 +3,10 @@
 @import "node_modules/@fortawesome/fontawesome-free/scss/brands";
 @import "node_modules/@fortawesome/fontawesome-free/scss/regular";
 @import "node_modules/@fortawesome/fontawesome-free/scss/solid";
-
+body
+{
+    overflow-y: scroll;
+}
 .corner-arrow::before
 {
     content: '↳';

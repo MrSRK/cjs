@@ -100,6 +100,12 @@ toolbox.route=(name,config,controller)=>
 				{
 					"method":"get",
 					"status":200,
+					"path":"/schema",
+					"controller":"json_schema"
+				},
+				{
+					"method":"get",
+					"status":200,
 					"path":"",
 					"controller":"json_find"
 				},

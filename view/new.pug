@@ -1,4 +1,17 @@
 extends admin-layout
 block content
-	h1 New Page
-	
+	include partials/admin-toolbar
+	.container(data-ng-init="admin.model('"+name+"')")
+		form(data-ng-init="admin.new()")
+			.form-group
+				label.text-capitalize(for="elemend-name") Name
+				input.form-control#elemend-name(type="text", placeholder='Enter Name',data-ng-model="page.record.name")
+			div(data-ng-repeat="elemend in page.schema")
+				.form-group(data-ng-if="admin.getTypeByName(elemend,'password')")
+					label.text-capitalize(for="elemend-email") E-mail
+					input.form-control(id="elemend-email",type="email", placeholder='Enter E-mail',data-ng-model="page.record.email")
+				.form-group(data-ng-if="admin.getTypeByName(elemend,'password')")
+					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="elemend")
+					input.form-control(id="elemend-{{elemend}}",type="{{admin.getTypeByName(elemend)}}", placeholder='Enter New {{elemend}}',data-ng-model="page.record[elemend]")
+			.text-right
+				button.btn.btn-primary(data-ng-click="admin.insertRecord()") Open New Record

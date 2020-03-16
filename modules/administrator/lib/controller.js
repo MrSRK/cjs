@@ -17,6 +17,7 @@ const controller=(toolbox,name)=>
 		],
 		api:
 		[
+			'json_schema',
 			'json_find',
 			'json_findById',
 			'json_authentication',

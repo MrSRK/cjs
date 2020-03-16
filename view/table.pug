@@ -1,16 +1,17 @@
 extends admin-layout
 block content
+	include partials/admin-toolbar
 	div(data-ng-init="admin.model('"+name+"')")
 		div(data-ng-init="admin.table()")
 			.row.align-items-center.border-bottom.mb-3.pb-3
 				.col-1.text-right
-					input(type="checkbox")
+					input.selh#selh-t(type="checkbox",data-ng-model="page.massSelect",data-ng-click="page.mass2select('#selh-t')")
 				.col-1.text-left
-				.col-2.px-1.text-dark.d-none.d-md-block
+				.col-2.px-1.text-dark.d-none.d-lg-block
 					button.p-0.btn.btn-link.text-muted(data-ng-click="page.pageOrder('_id')")
 						span.fas(data-ng-class="page.order=='_id'?'fa-sort-alpha-down text-primary':page.order=='-_id'?'fa-sort-alpha-up text-danger':'fa-sort-alpha-down text-muted'")
 					strong.ml-2 ID
-				.col-6.col-md-3.text-dark
+				.col-4.col-md-5.p-0.text-dark
 					button.p-0.btn.btn-link.text-muted(data-ng-click="page.pageOrder('name')")
 						span.fas(data-ng-class="page.order=='name'?'fa-sort-alpha-down text-primary':page.order=='-name'?'fa-sort-alpha-up text-danger':'fa-sort-alpha-down text-muted'")
 					strong.ml-2 Name
@@ -18,49 +19,67 @@ block content
 					button.p-0.btn.btn-link.text-muted(data-ng-click="page.pageOrder('createdAt')")
 						span.fas(data-ng-class="page.order=='createdAt'?'fa-sort-alpha-down text-primary':page.order=='-createdAt'?'fa-sort-alpha-up text-danger':'fa-sort-alpha-down text-muted'")
 					strong.ml-2 Create
-				.col-1.px-1.text-dark.d-none.d-md-block
+				.col-1.px-1.text-dark.d-none.d-lg-block
 					button.p-0.btn.btn-link.text-muted(data-ng-click="page.pageOrder('updatedAt')")
 						span.fas(data-ng-class="page.order=='updatedAt'?'fa-sort-alpha-down text-primary':page.order=='-updatedAt'?'fa-sort-alpha-up text-danger':'fa-sort-alpha-down text-muted'")
 					strong.ml-2 Update
-				.col-4.col-md-3.text-right.p-1
-					button.btn.btn-link(data-ng-click="page.go2previous()",data-ng-disabled="!page.previous")
-						small.fas.fa-chevron-left
-					select.small.mx-1(data-ng-model="page.bigin",data-ng-options="item as item.label for item in page.pages track by item.bigin")
-					button.btn.btn-link(data-ng-click="page.go2next()",data-ng-disabled="!page.next")
-						small.fas.fa-chevron-right
-			p {{page.select}}
-			.row.align-items-center.mb-2(data-ng-repeat="rec in page.data | orderBy:page.order | limitTo:page.limit:page.bigin.bigin")
+				.col-5.col-md-1.text-right.p-1
+					.input-group.input-group-sm.w-75.float-right
+						.input-group-prepend
+							button.btn.btn-link(data-ng-click="page.go2previous()",data-ng-disabled="!page.previous")
+								span.fas.fa-chevron-left
+						select.form-control(data-ng-model="page.bigin",data-ng-options="item as item.label for item in page.pages track by item.bigin",data-ng-change="page.resetSelect()")
+						.input-group-append
+							button.btn.link(data-ng-click="page.go2next()",data-ng-disabled="!page.next")
+								span.fas.fa-chevron-right
+			.row.align-items-center.mb-2
+				.col-10.d-none.d-md-block
+				.col-12.col-md-2.pr-0
+					.input-group.input-group-sm
+						.input-group-prepend
+							.input-group-text Searh
+						input.form-control(type="text",data-ng-model="page.searh")
+			.row.align-items-center.mb-2(data-ng-repeat="rec in page.data | filter:page.searh | orderBy:page.order | limitTo:page.limit:page.bigin.bigin")
 				.col-1.text-right
-					input(type="checkbox",data-ng-model="page.select[rec._id]")
+					input.sel(type="checkbox",data-ng-model="page.select[rec._id]",data-ng-click="page.set2select(rec._id)")
 				.col-1.text-left
 					button.btn.btn-link.p-0(data-ng-click="admin.status($index)")
 						span.far(data-ng-class="rec.active?'fa-check-circle text-success':'fa-times-circle text-danger'")
-				.col-2.px-1.text-muted.d-none.d-md-block
+				.col-2.px-1.text-muted.d-none.d-lg-block
 					a.small(data-ng-href="/"+name+"/{{rec._id}}",data-ng-bind="rec._id",target="_blank")
-				.col-3.d-none.d-md-block(data-ng-bind="rec.name")
-				.col-7.small.d-md-none(data-ng-bind="rec.name")
+				.col-5.d-none.d-md-block(data-ng-bind="rec.name")
+				.col-6.small.d-md-none(data-ng-bind="rec.name")
 				.col-1.px-1.d-none.d-md-block(data-ng-bind="rec.createdAt | date:'dd/mm/yyyy'")
-				.col-1.px-1.d-none.d-md-block(data-ng-bind="rec.updatedAt | date:'dd/mm/yyyy'")
-				.col-1.col-md-2.text-right
-					a.pr-2(data-ng-href="/admin/"+name+"/update/{{rec._id}}")
+				.col-1.px-1.d-none.d-lg-block(data-ng-bind="rec.updatedAt | date:'dd/mm/yyyy'")
+				.col-3.col-md-1.text-right.p-0
+					a.mr-3.mr-md-4(data-ng-href="/admin/"+name+"/update/{{rec._id}}")
 						span.fas.fa-external-link-alt.text-primary
-				.col-2.col-md-1.text-left
-					button.p-0.btn.btn-link(data-ng-click="admin.remove($index)")
+					button.p-0.btn.btn-link(data-ng-click="admin.remove(rec._id)")
 						span.far.fa-trash-alt.text-danger
 			.row.align-items-center.border-top.mt-3.pt-3
 				.col-1.text-right
-					input(type="checkbox")
-				.col-7.col-md-8.text-left
+					input.selh#selh-b(type="checkbox",data-ng-model="page.massSelect",data-ng-click="page.mass2select('#selh-b')")
+				.col-5.col-md-10.text-left
 					span.corner-arrow.text-muted.mr-2
-					button.btn.btn-link.p-0(data-ng-click="")
+					button.btn.btn-link.p-0(data-ng-click="admin.mass2status(true)")
 						span.mr-2.far.fa-check-circle.text-success
-					button.btn.btn-link.p-0(data-ng-click="")
+					button.btn.btn-link.p-0(data-ng-click="admin.mass2status(false)")
 						span.mr-2.far.fa-times-circle.text-danger
-					button.btn.btn-link.p-0(data-ng-click="")
+					button.btn.btn-link.p-0(data-ng-click="admin.mass2remove()")
 						span.far.fa-trash-alt.text-danger
-				.col-4.col-md-3.text-right.p-1
-					button.btn.btn-link(data-ng-click="page.go2previous()",data-ng-disabled="!page.previous")
-						small.fas.fa-chevron-left
-					select.small.mx-1(data-ng-model="page.bigin",data-ng-options="item as item.label for item in page.pages track by item.bigin")
-					button.btn.btn-link(data-ng-click="page.go2next()",data-ng-disabled="!page.next")
-						small.fas.fa-chevron-right
+				.col-5.col-md-1.text-right.p-1
+					.input-group.input-group-sm.w-75.float-right
+						.input-group-prepend
+							button.btn.btn-link(data-ng-click="page.go2previous()",data-ng-disabled="!page.previous")
+								span.fas.fa-chevron-left
+						select.form-control(data-ng-model="page.bigin",data-ng-options="item as item.label for item in page.pages track by item.bigin",data-ng-change="page.resetSelect()")
+						.input-group-append
+							button.btn.link(data-ng-click="page.go2next()",data-ng-disabled="!page.next")
+								span.fas.fa-chevron-right
+			.row.align-items-center.border-top.mt-3.pt-3
+				.col-10.d-none.d-md-block
+				.col-12.col-md-2.text-right
+					.input-group.input-group-sm.w-75.float-right
+						.input-group-prepend
+							.input-group-text Show Items
+						select.form-control(data-ng-model="page.limit",data-ng-options="item for item in [20,50,100,200]",data-ng-change="page.resetSelect()")

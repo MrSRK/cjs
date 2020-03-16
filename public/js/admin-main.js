@@ -13,7 +13,7 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 		{
 			$scope.model=model
 		}
-		const admin_status_single=(index,status)=>
+		const admin_new=_=>
 		{
 			model=$scope.model
 			if(!model)
@@ -22,30 +22,77 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 			{
 				if(error)
 					return console.log(error)
-				if(index>=0)
+				const url='/api/'+model+'/schema/'
+				const args={}
+				return worker.get(url,args,(error,doc)=>
 				{
-					$scope.page.status={index:index,_id:$scope.page.data[index]._id}
-				}
-				if(!$scope.page.status)
-					return console.log('Status: _id not exist')
-				const url='/admin/api/'+model+'/findByIdAndUpdate/'+$scope.page.status._id
-				const active=status||!$scope.page.data[$scope.page.status.index].active
-				const args={data:{active:active}}
+					if(error)
+						$scope.error=error
+					if(doc.auth===false)
+						return token_renew(admin_new)
+					if(!doc.status)
+						$scope.error=new Error(doc.message||"Unknown Error")
+					$scope.page.schema=Object.keys(doc.schema.obj)
+					$scope.$apply()
+				})
+			})
+		}
+		const admin_edit=_id=>
+		{
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			return picWorker((error,worker)=>
+			{
+				if(error)
+					return console.log(error)
+				if(!_id)
+					return console.log('Status: Index not set')
+				const url='/admin/api/'+model+'/findById/'+_id
+				const args={}
+				return worker.get(url,args,(error,doc)=>
+				{
+					if(error)
+						$scope.error=error
+					if(doc.auth===false)
+						return token_renew(admin_edit,_id)
+					if(!doc.status)
+						$scope.error=new Error(doc.message||"Unknown Error")
+					$scope.page.record=doc.doc
+					$scope.page.schema=Object.keys(doc.schema.obj)
+					$scope.$apply()
+				})
+			})
+		}
+		const admin_status_single=(index)=>
+		{
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			return picWorker((error,worker)=>
+			{
+				if(error)
+					return console.log(error)
+				if(!(index>=0))
+					return console.log('Status: Index not set')
+				if(!$scope.page.data[index])
+					return console.log('Status: Row not exist')
+				const url='/admin/api/'+model+'/findByIdAndUpdate/'+$scope.page.data[index]._id
+				const args={data:{active:!$scope.page.data[index].active}}
 				return worker.patch(url,args,(error,doc)=>
 				{
 					if(error)
 						$scope.error=error
 					if(doc.auth===false)
-						return token_renew(admin_status_single)
+						return token_renew(admin_status_single,index)
 					if(!doc.status)
 						$scope.error=new Error(doc.message||"Unknown Error")
-					$scope.page.data[$scope.page.status.index]=doc.doc
-					delete $scope.page.status
+					$scope.page.data[index]=doc.doc
 					$scope.$apply()
 				})
 			})
 		}
-		const admin_remove_single=index=>
+		const admin_remove_single=(_id,safe)=>
 		{
 			model=$scope.model
 			if(!model)
@@ -54,28 +101,30 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				{
 					if(error)
 						return console.log(error)
-					if(index>=0)
-						$scope.page.remove={index:index,_id:$scope.page.data[index]._id}
-					if(!$scope.page.remove)
-						return console.log('Remove: _id not exist')
-					const url='/admin/api/'+model+'/findByIdAndDelete/'+$scope.page.remove._id
-					const args={}
-					let safe=true
-					if(index)
-						safe=confirm('Delete this row?')
-					if(safe)
-						return worker.delete(url,args,(error,doc)=>
+					$scope.page.data.forEach((e,index)=>
+					{
+						if(e._id==_id)
 						{
-							if(error)
-								$scope.error=error
-							if(doc.auth===false)
-								return token_renew(admin_remove_single)
-							if(!doc.status)
-								$scope.error=new Error(doc.message||"Unknown Error")
-							$scope.page.data.splice($scope.page.remove.index,1)
-							delete $scope.page.remove
-							$scope.$apply()
-						})
+							if(!$scope.page.data[index])
+								return console.log('Remove: Row not exist')
+							const url='/admin/api/'+model+'/findByIdAndDelete/'+_id
+							const args={}
+							if(!safe)
+								safe=confirm('Delete this row?')
+							if(safe)
+								return worker.delete(url,args,(error,doc)=>
+								{
+									if(error)
+										$scope.error=error
+									if(doc.auth===false)
+										return token_renew(admin_remove_single,_id,true)
+									if(!doc.status)
+										$scope.error=new Error(doc.message||"Unknown Error")
+									$scope.page.data.splice(index,1)
+									//$scope.$apply()
+								})
+						}
+					})
 				})
 		}
 		const admin_table=_=>
@@ -98,14 +147,15 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 					if(!doc.status)
 						$scope.error=new Error(doc.message||"Unknown Error")
 					$scope.page.data=doc.doc
-
-					let pages=Math.ceil(doc.doc.length/$scope.page.limit)
-					$scope.page.pages=[]
-					for(var i=0;i<pages;i++)
-						$scope.page.pages.push({bigin:i*$scope.page.limit,label:(i+1)})
-					$scope.page.bigin=$scope.page.pages[0]
-					if($scope.page.pages.length>1)
-						$scope.page.next=1
+					$scope.$watch('page.limit',(newValue,oldValue)=>
+					{
+						setPages()
+					})
+					$scope.$watch('page.data',(newValue,oldValue)=>
+					{
+						setPages()
+					})
+					setPages()
 					$scope.$apply()
 				})
 			})
@@ -179,13 +229,13 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 			})
 		}
 		// Renew token if user token exist and re call fanction
-		const token_renew=call=>
+		const token_renew=(call,arg,safe)=>
 		{
 			const uToken=localStorage.getItem('user-token')
 			if(!uToken)
 				return null
 			localStorage.removeItem('token')
-			return call()
+			return call(arg,safe)
 		}
 		// workers array
 		let workers=[]
@@ -262,9 +312,202 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 					$scope.page.next=page+1
 				if(page>0)
 					$scope.page.previous=page
+				$scope.page.select={}
 			}
 		}
+		const set2select=_id=>
+		{
+			if($scope.page.select[_id])
+				delete $scope.page.select[_id]
+		}
+		const resetSelect=_=>
+		{
+			$scope.page.select={}
+			$('.selh').prop('checked',false)
+		}
+		const setPages=apply=>
+		{
+			let pages=Math.ceil($scope.page.data.length/$scope.page.limit)
+			$scope.page.pages=[]
+			for(var i=0;i<pages;i++)
+				$scope.page.pages.push({bigin:i*$scope.page.limit,label:(i+1)})
+			$scope.page.bigin=$scope.page.pages[0]
+			if($scope.page.pages.length>1)
+				$scope.page.next=1
+		}
+		const mass2status=status=>
+		{
+			if($scope.page.select.length==0)
+				return alert('Not Selected items found')
+			const ids=Object.keys($scope.page.select)
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			const ans=confirm('Are you sure?')
+			if(ans)
+			{
+				ids.forEach(id=>
+				{
+					$scope.page.data.forEach((item,index)=>
+					{
+						if(item._id==id)
+						{
+							item.active=!status
+							admin_status_single(index)
+						}
+					})
+				})
+				resetSelect()
+			}
+		}
+		const mass2remove=_=>
+		{
+			if($scope.page.select.length==0)
+				return alert('Not Selected items found')
+				const ids=Object.keys($scope.page.select)
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			const ans=confirm('Are you sure?')
+			if(ans)
+			{
+				let todelete=[]
+				ids.forEach(id=>
+				{
+					$scope.page.data.forEach((item,index)=>
+					{
+						if(item._id==id)
+							todelete.push(item._id)
+					})
+				})
+				console.log(todelete)
+				todelete.forEach(_id=>
+				{
+					removeById(_id)
+				})
+				ids.forEach(id=>
+				{
+					$scope.page.data.forEach((item,index)=>
+					{
+						if(item._id==id)
+							$scope.page.data.splice(index,1)
+					})
+				})
+				//setPages()
+				resetSelect()
+			}
+		}
+		const removeById=_id=>
+		{
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			return picWorker((error,worker)=>
+			{
+				if(error)
+					return console.log(error)
+				const url='/admin/api/'+model+'/findByIdAndDelete/'+_id
+				const args={}
+				return worker.delete(url,args,(error,doc)=>
+				{
+					if(error)
+						$scope.error=error
+					if(doc.auth===false)
+						return token_renew(removeById,_id)
+					if(!doc.status)
+						$scope.error=new Error(doc.message||"Unknown Error")
+				})
+			})
+		}
+		const mass2select=con=>
+		{
+			const selh=$(con).prop('checked')
+			$('.selh').prop('checked',selh)
+			$('.sel').each((i,e)=>
+			{
+				if($(e).prop('checked')!==selh)
+					$(e).click()
+			})
+		}
+		const admin_schema_getTypeByName=(name,type)=>
+		{
+			const types={
+				active:'checkbox',
+				name:'text',
+				email:'email',
+				password:'password',
+				images:'file'
+			}
+			if(type)
+			{
+				if(types[name]&&types[name]==type)
+					return true
+				if(!types[name]&&type=='text')
+					return true
+				return false
+			}
+			if(types[name])
+				return types[name]
+			return 'text'
+		}
+		const admin_udateRecord=_=>
+		{
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			return picWorker((error,worker)=>
+			{
+				if(error)
+					return console.log(error)
+				if(!$scope.page.record._id)
+					return console.log('Status: Record not set')
+				const url='/admin/api/'+model+'/findByIdAndUpdate/'+$scope.page.record._id
+				const args={data:$scope.page.record}
+				return worker.patch(url,args,(error,doc)=>
+				{
+					if(error)
+						$scope.error=error
+					if(doc.auth===false)
+						return token_renew(admin_udateRecord)
+					if(!doc.status)
+						$scope.error=new Error(doc.message||"Unknown Error")
+					$scope.page.record=doc.doc
+					$scope.$apply()
+				})
+			})
+		}
+		const admin_insertRecord=_=>
+		{
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			return picWorker((error,worker)=>
+			{
+				if(error)
+					return console.log(error)
+				const url='/admin/api/'+model+'/save/'
+				const args={data:$scope.page.record}
+				return worker.put(url,args,(error,doc)=>
+				{
+					if(error)
+						$scope.error=error
+					if(doc.auth===false)
+						return token_renew(admin_insertRecord)
+					if(!doc.status)
+						$scope.error=new Error(doc.message||"Unknown Error")
+					const _id=doc.doc._id
+					window.location.href='/admin/'+model+'/update/'+_id
+				})
+			})
+		}
+		const insertImage=_id=>
+		{
+			//DEN EXEI GRAFTEI O MULTER GIA OLA TA MODELS
+		}
 		$scope.page={}
+
+		$scope.page.record={}
+
 		$scope.page.data=[]
 		$scope.page.limit=20
 		$scope.page.bigin={bigin:0}
@@ -272,12 +515,15 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 		$scope.page.next=null
 		$scope.page.previous=null
 		$scope.page.order='_id'
+		$scope.page.searh=''
 		$scope.page.select={}
 		$scope.page.error={}
 		$scope.page.go2next=page_next
 		$scope.page.go2previous=page_previous
 		$scope.page.pageOrder=page_order
-
+		$scope.page.set2select=set2select
+		$scope.page.resetSelect=resetSelect
+		$scope.page.mass2select=mass2select
 		$scope.admin={}
 		$scope.admin.auth={}
 		$scope.admin.auth.signIn=admin_signIn
@@ -289,15 +535,38 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 		$scope.admin.table=admin_table
 		$scope.admin.remove=admin_remove_single
 		$scope.admin.status=admin_status_single
-		
-		
+		$scope.admin.mass2status=mass2status
+		$scope.admin.mass2remove=mass2remove
+		$scope.admin.edit=admin_edit
+		$scope.admin.new=admin_new
+		$scope.admin.getTypeByName=admin_schema_getTypeByName
+		$scope.admin.insertImage=insertImage
+		$scope.admin.udateRecord=admin_udateRecord
+		$scope.admin.insertRecord=admin_insertRecord
 		$scope.model=null
 		/**
 		 * Load login user data to scope (if any)
 		 */
-		const user=localStorage.getItem('user')
-		if(user)
-			$scope.admin.user=JSON.parse(user)
+		const uToken=localStorage.getItem('user-token')
+		if(uToken)
+		{
+			try
+			{
+				const user=localStorage.getItem('user')
+				$scope.admin.user=JSON.parse(user)
+				let dec=JSON.parse(atob(uToken.split('.')[1]))
+				if(!dec.exp)
+					throw new Error('User Error: Expiration time not exist. Remove login status')
+				if(dec.exp<(new Date().getTime()/1000))
+					throw new Error('User Error: Login token expires. Remove login status')
+			}
+			catch(error)
+			{
+				console.log(error)
+				localStorage.removeItem('user')
+				localStorage.removeItem('user-token')
+			}
+		}
 	}
 	catch(error)
 	{

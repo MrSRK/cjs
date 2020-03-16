@@ -1,0 +1,8 @@
+.text-right.mb-4
+    .btn-group(role='group', aria-label='Basic example')
+        a.btn.btn-primary(href="/admin/"+name+"/") Show Table
+        if(_id)
+            a.btn.btn-outline-info(href="/"+name+"/"+_id,target="blank") Preview Record
+        else
+            a.btn.btn-outline-info(href="/"+name+"/",target="blank") Preview List
+        a.btn.btn-outline-primary(href="/admin/"+name+"/insert") New Record
