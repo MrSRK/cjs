@@ -226,6 +226,12 @@ toolbox.route=(name,config,controller)=>
 				"controller":"json_auth_save"
 			},
 			{
+				"method":"put",
+				"status":200,
+				"path":"/image/save/:_id",
+				"controller":"json_auth_save_image"
+			},
+			{
 				"method":"patch",
 				"status":200,
 				"path":"/findByIdAndUpdate/:_id",

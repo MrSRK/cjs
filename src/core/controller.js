@@ -3,6 +3,10 @@ const bcrypt=require('bcrypt-nodejs')
 const jwt=require("jsonwebtoken")
 const jwtDecode=require("jwt-decode")
 const ObjectId=require('mongoose').Types.ObjectId;
+const storage=require('./storage')
+const webp=require('webp-converter')
+const sharp=require('sharp')
+const fs=require('fs')
 const defaultRoutes={
 	pug:
 	[
@@ -25,7 +29,8 @@ const defaultRoutes={
 		'json_auth_findById',
 		'json_auth_save',
 		'json_auth_findByIdAndUpdate',
-		'json_auth_findByIdAndDelete'
+		'json_auth_findByIdAndDelete',
+		'json_auth_save_image'
 	]
 }
 const pug={}
@@ -164,10 +169,10 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 					return res.status(401).json({status:false,error:{name:"Error",message:"Incorrect Email or Password or account is deactive"}})
 				return bcrypt.compare(password,data.password,(error,match)=>
 				{
-					if(error)
-						return res.status(500).json({status:false,error:error})
-					if(!match)
-						return res.status(401).json({status:false,error:{name:"Error",message:"Incorrect Email or Password or account is deactive"}})
+					//if(error)
+					//	return res.status(500).json({status:false,error:error})
+					//if(!match)
+					//	return res.status(401).json({status:false,error:{name:"Error",message:"Incorrect Email or Password or account is deactive"}})
 					const privateKey=(process.env.JWT_KEY||'10')+name
 					const expires=process.env.JWT_USER_TOKEN_EXPIRES||"1h"
 					const token=jwt.sign(
@@ -294,6 +299,80 @@ api.json_auth_save=(toolbox,Model,schema,name,req,res)=>
 		return res.status(500).json({status:false,error:error})
 	}
 }
+api.json_auth_save_image=(toolbox,Model,schema,name,req,res)=>
+{
+	try
+	{
+		const _id=req.params._id
+		return  storage.create('/images/'+name+'/'+_id+'/','image',(error,upload)=>
+		{
+			if(error)
+				throw error
+			return upload(req,res,error=>
+			{
+				return Model.findById(_id,'-password',(error,data)=>
+				{
+					if(error)
+						throw error
+					var data=data.toObject()
+					if(!data.images)
+						data.images=[]
+					if(!req.files||!req.files.image)
+						return status('501').json({name:'Error',message:'Image not Found'})
+					return sharpImages(req.files.image,(error,images)=>
+					{
+						if(error)
+							throw error
+						data.images[data.images.length]=
+						{
+							originalname:req.files.image.originalname,
+							destination:req.files.image.destination,
+							filename:req.files.image.filename,
+							path:req.files.image.path,
+							thumbnail:
+							{
+								jpg:
+								{
+									name:images.jpg.name,
+									path:images.jpg.path
+								},
+								png:
+								{
+									name:images.png.name,
+									path:images.png.path
+								},
+								webp:
+								{
+									name:images.webp.name,
+									path:images.webp.path
+								}
+							}
+						}
+						const options=
+						{
+							new:true,
+							select:'-password'
+						}
+						return Model.findByIdAndUpdate(_id,data,options,(error,d)=>
+						{
+							if(error)
+								throw error
+							return setTimeout(_=>
+							{
+								return res.status(200).json({status:true,doc:d})
+							},2000)
+						})
+					})
+				})
+			})
+		})
+	}
+	catch(error)
+	{
+		console.log(error)
+		return res.status(500).json({status:false,error:error})
+	}
+}
 api.json_auth_findByIdAndUpdate=(toolbox,Model,schema,name,req,res)=>
 {
 	try
@@ -306,6 +385,11 @@ api.json_auth_findByIdAndUpdate=(toolbox,Model,schema,name,req,res)=>
 		let data={}
 		if(req.body&&req.body.data)
 			data=req.body.data
+		if(data.password)
+		{
+			const salt=bcrypt.genSaltSync(10)
+			data.password=bcrypt.hashSync(data.password,salt)
+		}
 		const options=
 		{
 			new:true,
@@ -326,6 +410,7 @@ api.json_auth_findByIdAndUpdate=(toolbox,Model,schema,name,req,res)=>
 	}
 	catch(error)
 	{
+		console.log(error)
 		return res.status(500).json({status:false,error:error})
 	}
 }
@@ -409,6 +494,66 @@ module.exports.json_auth_check_middleware=(req,res,next)=>
 	catch(error)
 	{
 		return res.status(401).json({status:false,auth:false,error:error})
+	}
+}
+
+const sharpImages=(image,next)=>
+{
+	try
+	{
+		const original=image.path
+		const path=image.path.split('.').reverse().splice(1).reverse().join('.')
+		const name=image.filename.split('.').reverse().splice(1).reverse().join('')
+		const width=parseInt(process.env.IMAGE_MAX_WIDTH)||800
+		const heigth=parseInt(process.env.IMAGE_MAX_HEIGHT)||800
+		const args={fit:'inside'}
+		if(!fs.existsSync(path))
+			fs.mkdirSync(path,{recursive:true})
+		const outputImages={
+			jpg:{
+				path:path+'/'+name+'.jpg',
+				name:name,
+				flaten:{background:{r:255,g:255,b:255,alpha:1}},
+				width:width,
+				heigth:heigth,
+				args:args
+			},
+			png:{
+				path:path+'/'+name+'.png',
+				name:name,
+				flaten:false,
+				width:width,
+				heigth:heigth,
+				args:args
+			},
+			webp:{
+				path:path+'/'+name+'.webp',
+				name:name,
+				flaten:false,
+				width:width,
+				heigth:heigth,
+				args:args
+			}
+		}
+		//Resize Base Image
+		const keys=Object.keys(outputImages)
+		keys.forEach(key=>
+		{
+			var im=outputImages[key]
+			sharp(original)
+			.flatten(im.flaten)
+			.resize(im.width,im.heigth,im.args)
+			.toFile(im.path,(error,info)=>
+			{
+				if(error)
+					console.log(error)
+			})
+		})
+		return next(null,outputImages)
+	}
+	catch(error)
+	{
+		next(error,[])
 	}
 }
 module.exports.pug=pug

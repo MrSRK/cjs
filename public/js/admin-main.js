@@ -500,9 +500,34 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				})
 			})
 		}
-		const insertImage=_id=>
+		const insertImage=(_id,element)=>
 		{
-			//DEN EXEI GRAFTEI O MULTER GIA OLA TA MODELS
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			const token=localStorage.getItem('token')
+			var data=new FormData()
+			data.append('image',$(element)[0].files[0])
+			jQuery.ajax({
+				url: '/admin/api/'+model+'/image/save/'+_id,
+				headers: {"Authorization": "Bearer "+token},
+				type:'PUT',
+				data: data,
+				contentType: false,
+				processData: false,
+				success:response=>
+				{
+					if(!response.status)
+						$scope.error=new Error(response.message||"Unknown Error")
+					if(response.doc.images)
+						$scope.page.record.images=response.doc.images
+					$scope.$apply()
+				},
+				error:(jqXHR,textStatus,errorMessage)=>
+				{
+					alert('Error uploading: ' + errorMessage);
+				}
+			})
 		}
 		$scope.page={}
 

@@ -2,14 +2,10 @@ const mongoose=require('mongoose')
 const bcrypt = require('bcrypt-nodejs')
 const modelName=__dirname.split("\\").reverse()[1]
 const image=mongoose.Schema({
-	fieldname:{type:String,required:true},
 	originalname:{type:String},
-	encoding:{type:String},
-	mimetype:{type:String},
 	destination:{type:String},
 	filename:{type:String},
 	path:{type:String},
-    size:{type:Number},
     thumbnail:
     {
         jpg:

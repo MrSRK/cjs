@@ -22,10 +22,15 @@ block content
 							.border.p-2
 								h5 Images
 								.row
-									.col-12
+									.col-1
 										button.btn.btn-link(title="Insert image",onclick="document.getElementById('from-image').click()")
 											span.h1.far.fa-plus-square
-										input#from-image.d-none(type='file',onchange="angular.element(this).scope().admin.insertImage('"+_id+"')",accept=".png,.jpg,.webp")
-									.col-12(data-ng-repeat="image in page.record[elemend].images") image
+										input#from-image.d-none(name="image",type='file',onchange="angular.element(this).scope().admin.insertImage('"+_id+"','#from-image')",accept=".png,.jpg,.webp")
+									.col-1.p-1(data-ng-repeat="image in page.record[elemend]")
+										button.btn.btn-sm.btn-link.float-right.m-0.p-0(data-ng-click="removeImage(image,$index)")
+											small.far.fa-trash-alt.text-danger
+										picture
+											source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/"+name+"/"+_id+"/{{image.thumbnail[type].name+'/'+image.thumbnail[type].name+'.'+type}}")
+											img.img-fluid(data-ng-src="/upload/images/"+name+"/"+_id+"/{{image.thumbnail.jpg.name+'/'+image.thumbnail.jpg.name+'.jpg'}}")
 			.text-right
 				button.btn.btn-primary(data-ng-click="admin.udateRecord()") Save
