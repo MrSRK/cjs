@@ -500,7 +500,31 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				})
 			})
 		}
-		const insertImage=(_id,element)=>
+		const admin_removeImage=(_id,image_id)=>
+		{
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			return picWorker((error,worker)=>
+			{
+				if(error)
+					return console.log(error)
+				const url='/admin/api/'+model+'/image/'+_id+'/'+image_id
+				const args={}
+				return worker.delete(url,args,(error,doc)=>
+				{
+					if(error)
+						$scope.error=error
+					if(doc.auth===false)
+						return token_renew(admin_removeImage,_id,image_id)
+					if(!doc.status)
+						$scope.error=new Error(doc.message||"Unknown Error")
+					$scope.page.record.images=doc.doc.images
+					$scope.$apply()
+				})
+			})
+		}
+		const admin_insertImage=(_id,element)=>
 		{
 			model=$scope.model
 			if(!model)
@@ -508,7 +532,7 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 			const token=localStorage.getItem('token')
 			var data=new FormData()
 			data.append('image',$(element)[0].files[0])
-			jQuery.ajax({
+			return jQuery.ajax({
 				url: '/admin/api/'+model+'/image/save/'+_id,
 				headers: {"Authorization": "Bearer "+token},
 				type:'PUT',
@@ -525,14 +549,35 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				},
 				error:(jqXHR,textStatus,errorMessage)=>
 				{
-					alert('Error uploading: ' + errorMessage);
+					if(jqXHR.responseText)
+					{
+						resp=JSON.parse(jqXHR.responseText)
+						if(resp.auth===false)
+						{
+							return jQuery.ajax({
+								url: '/admin/api/'+model+'/token',
+								type:'POST',
+								data:{userToken:localStorage.getItem('user-token')},
+								success:response=>
+								{
+									if(!response.status)
+										return false
+									localStorage.setItem('token',response.token)
+									return admin_insertImage(_id,element)
+								},
+								error:(jqXHR,textStatus,errorMessage)=>
+								{
+									alert('Error uploading: ' + errorMessage)
+								}
+							})
+						}
+					}
+					alert('Error uploading: ' + errorMessage)
 				}
 			})
 		}
 		$scope.page={}
-
 		$scope.page.record={}
-
 		$scope.page.data=[]
 		$scope.page.limit=20
 		$scope.page.bigin={bigin:0}
@@ -565,7 +610,8 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 		$scope.admin.edit=admin_edit
 		$scope.admin.new=admin_new
 		$scope.admin.getTypeByName=admin_schema_getTypeByName
-		$scope.admin.insertImage=insertImage
+		$scope.admin.insertImage=admin_insertImage
+		$scope.admin.removeImage=admin_removeImage
 		$scope.admin.udateRecord=admin_udateRecord
 		$scope.admin.insertRecord=admin_insertRecord
 		$scope.model=null

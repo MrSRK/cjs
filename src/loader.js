@@ -232,6 +232,12 @@ toolbox.route=(name,config,controller)=>
 				"controller":"json_auth_save_image"
 			},
 			{
+				"method":"delete",
+				"status":200,
+				"path":"/image/:_id/:image_id",
+				"controller":"json_auth_remove_image"
+			},
+			{
 				"method":"patch",
 				"status":200,
 				"path":"/findByIdAndUpdate/:_id",

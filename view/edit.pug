@@ -27,7 +27,7 @@ block content
 											span.h1.far.fa-plus-square
 										input#from-image.d-none(name="image",type='file',onchange="angular.element(this).scope().admin.insertImage('"+_id+"','#from-image')",accept=".png,.jpg,.webp")
 									.col-1.p-1(data-ng-repeat="image in page.record[elemend]")
-										button.btn.btn-sm.btn-link.float-right.m-0.p-0(data-ng-click="removeImage(image,$index)")
+										button.btn.btn-sm.btn-link.float-right.m-0.p-0(data-ng-click="admin.removeImage(page.record._id,image._id)")
 											small.far.fa-trash-alt.text-danger
 										picture
 											source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/"+name+"/"+_id+"/{{image.thumbnail[type].name+'/'+image.thumbnail[type].name+'.'+type}}")

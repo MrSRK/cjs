@@ -27,6 +27,7 @@ const controller=(toolbox,name)=>
 			'json_auth_findById',
 			'json_auth_save',
 			'json_auth_save_image',
+			'json_auth_remove_image',
 			'json_auth_findByIdAndUpdate',
 			'json_auth_findByIdAndDelete'
 		]

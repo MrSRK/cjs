@@ -30,7 +30,8 @@ const defaultRoutes={
 		'json_auth_save',
 		'json_auth_findByIdAndUpdate',
 		'json_auth_findByIdAndDelete',
-		'json_auth_save_image'
+		'json_auth_save_image',
+		'json_auth_remove_image'
 	]
 }
 const pug={}
@@ -169,10 +170,10 @@ api.json_authentication=(toolbox,Model,schema,name,req,res)=>
 					return res.status(401).json({status:false,error:{name:"Error",message:"Incorrect Email or Password or account is deactive"}})
 				return bcrypt.compare(password,data.password,(error,match)=>
 				{
-					//if(error)
-					//	return res.status(500).json({status:false,error:error})
-					//if(!match)
-					//	return res.status(401).json({status:false,error:{name:"Error",message:"Incorrect Email or Password or account is deactive"}})
+					if(error)
+						return res.status(500).json({status:false,error:error})
+					if(!match)
+						return res.status(401).json({status:false,error:{name:"Error",message:"Incorrect Email or Password or account is deactive"}})
 					const privateKey=(process.env.JWT_KEY||'10')+name
 					const expires=process.env.JWT_USER_TOKEN_EXPIRES||"1h"
 					const token=jwt.sign(
@@ -296,6 +297,65 @@ api.json_auth_save=(toolbox,Model,schema,name,req,res)=>
 	}
 	catch(error)
 	{
+		return res.status(500).json({status:false,error:error})
+	}
+}
+api.json_auth_remove_image=(toolbox,Model,schema,name,req,res)=>
+{
+	try
+	{
+		const _id=req.params._id
+		const image_id=req.params.image_id
+		return Model.findById(_id,(error,doc)=>
+		{
+			if(error)
+				throw error
+			if(!doc)
+				throw new Error('Record not exist')
+			if(doc.images)
+				doc.images.forEach((img,index)=>
+				{
+					if(img._id==image_id)
+					{
+						let toDelete=doc.images[index]
+						doc.images.splice(index,1)[0]
+						fs.unlink(toDelete.path,error=>
+						{
+							if(error)
+								console.log(error)
+						})
+						const keys=['jpg','png','webp']
+						keys.forEach(key=>
+						{
+							fs.unlink(toDelete.thumbnail[key].path,error=>
+							{
+								if(error)
+									console.log(error)
+							})
+						})
+						setTimeout(_=>
+						{
+							const dir=toDelete.path.split('.').reverse().splice(1).reverse().join('.')
+							fs.rmdir(dir,error=>
+							{
+								if(error)
+									console.log(error)
+							})
+						},5000)
+						return Model.findByIdAndUpdate(_id,doc,{new:true},(error,d)=>
+						{
+							if(error)
+								throw error
+							return res.status(200).json({status:true,doc:d})
+						})
+					}
+				})
+			return new Error('Image not Found')
+		})
+	}
+	catch(error)
+	{
+		console.log(error)
 		return res.status(500).json({status:false,error:error})
 	}
 }
