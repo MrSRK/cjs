@@ -44,7 +44,7 @@ defaultRoutes.pug.forEach(f=>
 			const _id=req.params._id||null
 			return res.status(200).render(f.replace('pug_',''),
 			{
-				title:name.substr(0,1).toUpperCase()+name.substr(1)+' '+f.substr(0,1).toUpperCase()+f.substr(1)+' Page',
+				title:name.substr(0,1).toUpperCase()+name.substr(1)+' '+f.replace('pug_','').substr(0,1).toUpperCase()+f.replace('pug_','').substr(1)+' Page',
 				name:name,
 				schema:schema,
 				_id:_id
