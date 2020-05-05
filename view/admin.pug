@@ -1,4 +1,17 @@
 extends admin-layout
 block content
-	h1 Admin Page
-	
+	.container
+		h1
+			strong Welcome!
+		h4
+			small CJS administrator area
+		.text-left(data-ng-if="admin.user")
+			p.mt-5
+				strong You can handle one of the following objects:
+			.btn-group.ml-5(role="group")
+				a.btn.btn-outline-secondary.text-capitalize(data-ng-repeat="menu in admin.data.menu",data-ng-href="{{menu.url}}",data-ng-bind="menu.name")
+		.text-left(data-ng-if="!admin.user")
+			p
+				| You need to
+				a.mx-1(href='/admin/administrator/signIn') Sign In
+				| to have access to administrator menu options

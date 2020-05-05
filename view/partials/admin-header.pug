@@ -4,15 +4,15 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light
 		span.navbar-toggler-icon
 	#navbarSupportedContent.collapse.navbar-collapse
 		ul.navbar-nav.mr-auto(data-ng-init="admin.init.menu()")
-			li.nav-item.active.text-capitalize(data-ng-repeat="menu in admin.data.menu")
-				a.nav-link(ng-href="{{menu.url}}",data-ng-bind="menu.name")
+			li.nav-item.text-capitalize(data-ng-repeat="menu in admin.data.menu")
+				a.nav-link(data-ng-href="{{menu.url}}",data-ng-bind="menu.name")
 		ul.navbar-nav.ml-auto(data-ng-if="admin.user")
-			li.nav-item.active
+			li.nav-item
 				a.nav-link.small(href="#")
 					span.text-muted.mr-1 Wellcome
 					strong {{admin.user.name}}
-			li.nav-item.active
+			li.nav-item
 				a.nav-link.small(href="#",data-ng-click="admin.auth.signOut()") Sign Out
 		ul.navbar-nav.ml-auto(data-ng-if="!admin.user")
-			li.nav-item.active
+			li.nav-item
 				a.nav-link(href='/admin/administrator/signIn') Sign in
