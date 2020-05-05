@@ -121,7 +121,7 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 									if(!doc.status)
 										$scope.error=new Error(doc.message||"Unknown Error")
 									$scope.page.data.splice(index,1)
-									//$scope.$apply()
+									$scope.$apply()
 								})
 						}
 					})
@@ -393,7 +393,6 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 							$scope.page.data.splice(index,1)
 					})
 				})
-				//setPages()
 				resetSelect()
 			}
 		}
@@ -434,12 +433,22 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 			const types={
 				active:'checkbox',
 				name:'text',
+				title:'text',
 				email:'email',
 				password:'password',
-				images:'file'
+				images:'file',
+				text:'textarea',
+				description:'textarea',
+				comments:'textarea',
+				parent:'select'
 			}
 			if(type)
 			{
+				if(name.indexOf('parent_')>=0)
+					if(type=='select')
+						return true
+					else
+						return false
 				if(types[name]&&types[name]==type)
 					return true
 				if(!types[name]&&type=='text')
@@ -448,6 +457,8 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 			}
 			if(types[name])
 				return types[name]
+			if(name.indexOf('parent_')>=0)
+				return 'select'
 			return 'text'
 		}
 		const admin_udateRecord=_=>
@@ -555,7 +566,7 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 						if(resp.auth===false)
 						{
 							return jQuery.ajax({
-								url: '/admin/api/'+model+'/token',
+								url: '/admin/api/administrator/token',
 								type:'POST',
 								data:{userToken:localStorage.getItem('user-token')},
 								success:response=>
@@ -576,6 +587,36 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				}
 			})
 		}
+		const admin_loadAsside=(target,store)=>
+		{
+			return picWorker((error,worker)=>
+			{
+				if(error)
+					return console.log(error)
+				let t=target
+				if(store.indexOf('parent_')>=0)
+					t=store.replace('parent_','')
+				const url='/admin/api/'+t+'/find'
+				const args={}
+				return worker.get(url,args,(error,doc)=>
+				{
+					if(error)
+						$scope.error=error
+					if(doc.auth===false)
+						return token_renew(admin_loadAsside,target,store)
+					if(!doc.status)
+						$scope.error=new Error(doc.message||"Unknown Error")
+
+					$scope.asside[store]=doc.doc
+					$scope.$apply()
+				})
+			})
+		}
+		const admin_formElemendName=name=>
+		{
+			return name.split('_').join(' ')
+		}
+		$scope.asside={}
 		$scope.page={}
 		$scope.page.record={}
 		$scope.page.data=[]
@@ -614,6 +655,8 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 		$scope.admin.removeImage=admin_removeImage
 		$scope.admin.udateRecord=admin_udateRecord
 		$scope.admin.insertRecord=admin_insertRecord
+		$scope.admin.loadAsside=admin_loadAsside
+		$scope.admin.formElemendName=admin_formElemendName
 		$scope.model=null
 		/**
 		 * Load login user data to scope (if any)

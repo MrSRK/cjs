@@ -2,6 +2,9 @@ extends admin-layout
 block content
 	include partials/admin-toolbar
 	div(data-ng-init="admin.model('"+name+"')")
+		h5
+			strong.mr-3.text-capitalize=name
+			small.text-muted (Table / List)
 		div(data-ng-init="admin.table()")
 			.row.align-items-center.border-bottom.mb-3.pb-3
 				.col-1.text-right
@@ -47,10 +50,14 @@ block content
 						span.far(data-ng-class="rec.active?'fa-check-circle text-success':'fa-times-circle text-danger'")
 				.col-2.px-1.text-muted.d-none.d-lg-block
 					a.small(data-ng-href="/"+name+"/{{rec._id}}",data-ng-bind="rec._id",target="_blank")
-				.col-5.d-none.d-md-block(data-ng-bind="rec.name")
+				.col-1.d-none.d-md-block
+					picture(data-ng-if="rec.images&&rec.images.length>0")
+						source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/"+name+"/{{rec._id+'/'+rec.images[0].thumbnail[type].name+'/'+rec.images[0].thumbnail[type].name+'.'+type}}")
+						img.img-fluid.w-25(data-ng-src="/upload/images/"+name+"/"+_id+"/{{rec.images[0].filename}}")
+				.col-4.d-none.d-md-block(data-ng-bind="rec.name")
 				.col-6.small.d-md-none(data-ng-bind="rec.name")
-				.col-1.px-1.d-none.d-md-block(data-ng-bind="rec.createdAt | date:'dd/mm/yyyy'")
-				.col-1.px-1.d-none.d-lg-block(data-ng-bind="rec.updatedAt | date:'dd/mm/yyyy'")
+				.col-1.px-1.d-none.d-md-block.small(data-ng-bind="rec.createdAt | date:'dd/mm/yyyy'")
+				.col-1.px-1.d-none.d-lg-block.small(data-ng-bind="rec.updatedAt | date:'dd/mm/yyyy'")
 				.col-3.col-md-1.text-right.p-0
 					a.mr-3.mr-md-4(data-ng-href="/admin/"+name+"/update/{{rec._id}}")
 						span.fas.fa-external-link-alt.text-primary

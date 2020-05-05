@@ -232,9 +232,17 @@ api.json_auth_find=(toolbox,Model,schema,name,req,res)=>
 		let where={}
 		if(req.body&&req.body.where)
 			where=req.body.where
+		let populate=[]
+		let keys=Object.keys(schema.obj)
+		keys.forEach(v=>
+		{
+			if(v=='parent'||v.indexOf('parent_')>=0)
+				populate.push(v)
+		})
 		return Model
 		.find(where)
 		.select('-password')
+		.populate(populate)
 		.exec()
 		.then(doc=>
 		{
@@ -258,8 +266,16 @@ api.json_auth_findById=(toolbox,Model,schema,name,req,res)=>
 		let where={}
 		if(req.body&&req.body.where)
 			where=req.body.where
+		let populate=[]
+		let keys=Object.keys(schema.obj)
+		keys.forEach(v=>
+		{
+			if(v=='parent'||v.indexOf('parent_')>=0)
+				populate.push(v)
+		})
 		return Model
 		.findById(req.params._id)
+		.populate(populate)
 		.select('-password')
 		.where(where)
 		.exec()
@@ -457,6 +473,7 @@ api.json_auth_findByIdAndUpdate=(toolbox,Model,schema,name,req,res)=>
 		}
 		Model
 		.findByIdAndUpdate(req.params._id,data,options)
+		.populate('parent')
 		.where(where)
 		.exec()
 		.then(doc=>
@@ -489,15 +506,60 @@ api.json_auth_findByIdAndDelete=(toolbox,Model,schema,name,req,res)=>
 		.exec()
 		.then(doc=>
 		{
+			//delete images
+			if(doc.images)
+			{
+				let dir=''
+				doc.images.forEach(image=>
+				{
+					fs.unlink(image.path,error=>
+					{
+						if(error)
+							console.log(error)
+					})
+					const keys=['jpg','png','webp']
+					if(image.thumbnail)
+					{
+						keys.forEach(key=>
+						{
+							fs.unlink(image.thumbnail[key].path,error=>
+							{
+								if(error)
+									console.log(error)
+							})
+						})
+					}
+					dir=image.path.split('.').reverse().splice(1).reverse().join('.')
+					setTimeout(_=>
+					{
+						fs.rmdir(dir,error=>
+						{
+							if(error)
+								console.log(error)
+						})
+					},5000)
+				})
+				const d=dir.split("\\").reverse().splice(1).reverse().join("\\")
+				setTimeout(_=>
+				{
+					fs.rmdir(d,error=>
+					{
+						if(error)
+							console.log(error)
+					})
+				},7000)
+			}
 			return res.status(200).json({status:true,doc:doc})
 		})
 		.catch(error=>
 		{
+			console.log(error)
 			return res.status(500).json({status:false,error:error})
 		})
 	}
 	catch(error)
 	{
+		console.log(error)
 		return res.status(500).json({status:false,error:error})
 	}
 }

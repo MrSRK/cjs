@@ -1,0 +1,12 @@
+{
+    "router":
+    {
+        "userRoutes":false,
+        "powerUser":"admin",
+        "guestDefaultRoot":true,
+        "rewriteRoot":null,
+        "routes":
+        [
+        ]
+    }
+}

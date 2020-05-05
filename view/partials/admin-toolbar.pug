@@ -1,8 +1,16 @@
 .text-right.mb-4
-    .btn-group(role='group', aria-label='Basic example')
-        a.btn.btn-primary(href="/admin/"+name+"/") Show Table
+    .btn-group(role='group')
+        a.btn.btn-primary(href="/admin/"+name+"/")
+            span.fas.fa-th.mr-1
+            span Table
         if(_id)
-            a.btn.btn-outline-info(href="/"+name+"/"+_id,target="blank") Preview Record
+            a.btn.btn-warning.text-white(href="/"+name+"/"+_id,target="_blank")
+                span.fas.fa-eye.mr-1
+                span Preview
         else
-            a.btn.btn-outline-info(href="/"+name+"/",target="blank") Preview List
-        a.btn.btn-outline-primary(href="/admin/"+name+"/insert") New Record
+            a.btn.btn-warning.text-white(href="/"+name+"/",target="_blank")
+                span.fas.fa-eye.mr-1
+                span Preview
+        a.btn.btn-danger(href="/admin/"+name+"/insert")
+            span.fas.fa-plus.mr-1
+            span New

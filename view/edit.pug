@@ -2,11 +2,19 @@ extends admin-layout
 block content
 	include partials/admin-toolbar
 	.container(data-ng-init="admin.model('"+name+"')")
+		h3
+			strong.mr-3.text-capitalize=name
+			small.text-muted (Update / Edit)
+		h6.small.mb-5
+			a.text-muted(href=name+"/update/"+_id)=_id
 		form(data-ng-init="admin.edit('"+_id+"')")
 			div(data-ng-repeat="elemend in page.schema")
 				.form-group(data-ng-if="admin.getTypeByName(elemend,'text')")
 					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="elemend")
 					input.form-control(id="elemend-{{elemend}}",type="{{admin.getTypeByName(elemend)}}",, placeholder='Enter {{elemend}}',data-ng-model="page.record[elemend]")
+				.form-group(data-ng-if="admin.getTypeByName(elemend,'textarea')")
+					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="elemend")
+					textarea.form-control(id="elemend-{{elemend}}",type="{{admin.getTypeByName(elemend)}}",, placeholder='Enter {{elemend}}',data-ng-model="page.record[elemend]")
 				.form-check(data-ng-if="admin.getTypeByName(elemend,'checkbox')")
 					input.form-check-input(type="{{admin.getTypeByName(elemend)}}",id="elemend-{{elemend}}",data-ng-model="page.record[elemend]")
 					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="elemend")
@@ -29,8 +37,17 @@ block content
 									.col-1.p-1(data-ng-repeat="image in page.record[elemend]")
 										button.btn.btn-sm.btn-link.float-right.m-0.p-0(data-ng-click="admin.removeImage(page.record._id,image._id)")
 											small.far.fa-trash-alt.text-danger
+										a.btn.btn-sm.btn-link.float-right.m-0.p-0(download="{{image.originalname}}",ng-href="/upload/images/"+name+"/"+_id+"/{{image.filename}}")
+											small.fas.fa-save.text-primary.mr-1
 										picture
 											source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/"+name+"/"+_id+"/{{image.thumbnail[type].name+'/'+image.thumbnail[type].name+'.'+type}}")
-											img.img-fluid(data-ng-src="/upload/images/"+name+"/"+_id+"/{{image.thumbnail.jpg.name+'/'+image.thumbnail.jpg.name+'.jpg'}}")
+											img.img-fluid(data-ng-src="/upload/images/"+name+"/"+_id+"/{{image.filename}}")
+				.form-group(data-ng-if="admin.getTypeByName(elemend,'select')")
+					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="admin.formElemendName(elemend)")
+					select.form-control(id="elemend-{{elemend}}",data-ng-init="admin.loadAsside('"+name+"',elemend)",data-ng-model="page.record[elemend]",data-ng-options="item as item.name for item in asside[elemend] track by item._id")
+					p.text-right
+						button.btn.btn-sm.btn-link.text-danger(data-ng-click="page.record[elemend]=null") Remove
 			.text-right
-				button.btn.btn-primary(data-ng-click="admin.udateRecord()") Save
+				button.btn.btn-primary(data-ng-click="admin.udateRecord()")
+					span.fas.fa-save.mr-2
+					span Save

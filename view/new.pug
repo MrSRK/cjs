@@ -2,6 +2,9 @@ extends admin-layout
 block content
 	include partials/admin-toolbar
 	.container(data-ng-init="admin.model('"+name+"')")
+		h3.mb-5
+			strong.mr-3.text-capitalize=name
+			small.text-muted (Insert / New)
 		form(data-ng-init="admin.new()")
 			.form-group
 				label.text-capitalize(for="elemend-name") Name
