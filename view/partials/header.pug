@@ -1,0 +1,8 @@
+nav.navbar.navbar-expand-lg.navbar-light.bg-light
+	a.navbar-brand.text-muted(href='/') Saloras Logo Area
+	button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+		span.navbar-toggler-icon
+	#navbarSupportedContent.collapse.navbar-collapse
+		ul.navbar-nav.mr-auto(data-ng-init="user.init.menu()")
+			li.nav-item.text-capitalize(data-ng-repeat="menu in storage.get('navigation')")
+				a.nav-link(data-ng-href="/navigation/{{menu._id}}",data-ng-bind="menu.name")
