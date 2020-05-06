@@ -5,42 +5,81 @@ const app=angular.module("app",['ngCookies','app.cjs'])
 /**
  * Main site default controller
  */
-app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,$cookies,$cjs)=>
+app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)=>
 {
 	try
 	{
-		const init_setModel=model=>
+		const page_textMaxLength=(length,text,end)=>
+		{
+			if(text.length<length)
+				return text
+			return text.substring(0,length)+end
+		}
+		const page_list=(model,parent_navigation)=>
+		{
+			try
+			{
+				if(!storage_exist('page-list-'+model))
+					return picWorker((error,worker)=>
+					{
+						console.log(parent_navigation)
+						if(error)
+							return console.log(error)
+						return worker.post('/api/'+model,{where:{parent_navigation:parent_navigation}},(error,doc)=>
+						{
+							if(error)
+								return console.log(error)
+							if(!storage_set('page-list-'+model,doc.doc))
+								throw Error('Error on seting navigation data to storage')
+							return true
+						})
+					})
+			}
+			catch(error)
+			{
+				console.log(error)
+			}
+		}
+		const init_model=model=>
 		{
 			$scope.model=model
 		}
-		// Initialize Administrator menu
 		const init_navigation=_=>
 		{
-			if(!$scope.storage.exist('navigation'))
-				return picWorker((error,worker)=>
-				{
-					if(error)
-						return console.log(error)
-					return worker.get('/api/navigation',null,(error,doc)=>
+			try
+			{
+				if(!storage_exist('navigation'))
+					return picWorker((error,worker)=>
 					{
 						if(error)
 							return console.log(error)
-						$scope.storage.set('navigation',doc.doc)
-						return true
+						return worker.get('/api/navigation',null,(error,doc)=>
+						{
+							if(error)
+								return console.log(error)
+							if(!storage_set('navigation',doc.doc))
+								throw Error('Error on seting navigation data to storage')
+							return true
+						})
 					})
-				})
+			}
+			catch(error)
+			{
+				console.log(error)
+				return false
+			}
 		}
-		// workers array
-		let workers=[]
-		$scope.storage={}
-		$scope.storage.data={}
-		$scope.storage.set=(location,data)=>
+		/*
+		 	#### Storage Functions ####
+		*/
+		const storage_set=(location,data)=>
 		{
 			try
 			{
 				$scope.storage.data[location]=data
 				$scope.$apply()
-				sessionStorage.setItem('storage',JSON.stringify($scope.storage.data))
+				let name='storage-'+($scope.storage.version||0)
+				sessionStorage.setItem(name,JSON.stringify($scope.storage.data))
 				return true
 			}
 			catch(error)
@@ -49,7 +88,7 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				return false
 			}
 		}
-		$scope.storage.exist=location=>
+		const storage_exist=location=>
 		{
 			try
 			{
@@ -61,14 +100,22 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				return false
 			}
 		}
-		$scope.storage.get=location=>
+		const storage_get=location=>
 		{
 			try
 			{
-				if($scope.storage.exist(location))
+				let name='storage-'+($scope.storage.version||0)
+				if(storage_exist(location))
 					return $scope.storage.data[location]
+				let storage=JSON.parse(sessionStorage.getItem(name)||{})
+				if(storage[location])
+				{
+					if(!$scope.storage.data)
+						$scope.storage.data={}
+					$scope.storage.data[location]=storage[location]
+					return storage[location]
+				}
 				console.log(`data ${location} not exist`)
-				return null
 			}
 			catch(error)
 			{
@@ -76,14 +123,14 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				return null
 			}
 		}
-		$scope.storage.load=_=>
+		const storage_load=_=>
 		{
 			try
 			{
-				if(!sessionStorage.getItem('storage'))
-					$scope.storage.data={}
-				else
-					$scope.storage.data=JSON.parse(sessionStorage.getItem('storage'))
+				let name='storage-'+($scope.storage.version||0)
+				if(!sessionStorage.getItem(name))
+					sessionStorage.setItem(name,JSON.stringify({}))
+				$scope.storage.data=JSON.parse(sessionStorage.getItem(name)||{})
 				return true
 			}
 			catch(error)
@@ -92,9 +139,10 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 				return false
 			}
 		}
-		//Load exising storage for session storage
-		$scope.storage.load()
-		//Web Workerns
+		/*
+			#### Web Worker functions ####
+		*/
+		let workers=[]
 		const picWorker=next=>
 		{
 			let worker=null
@@ -117,10 +165,24 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 			}
 			return next(null,worker)
 		}
+		// Initialize scope (page) objects / functions
+		$scope.page={}
+		$scope.page.list=page_list
+		$scope.page.textMaxLength=page_textMaxLength
+		// Initialize scope (user) objects / functions
 		$scope.user={}
 		$scope.user.init={}
+		$scope.user.init.model=init_model
 		$scope.user.init.navigation=init_navigation
-		$scope.user.model=init_setModel
+		$scope.model=null
+		// Initialize scope (storage) objects / functions
+		$scope.storage={}
+		$scope.storage.version='beta'
+		$scope.storage.data={}
+		$scope.storage.get=storage_get
+		$scope.storage.exist=storage_exist
+		// Load Stortage data from session storage to scope storage
+		storage_load()
 	}
 	catch(error)
 	{

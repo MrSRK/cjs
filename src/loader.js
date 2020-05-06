@@ -114,6 +114,24 @@ toolbox.route=(name,config,controller)=>
 					"status":200,
 					"path":"/:_id",
 					"controller":"json_findById"
+				},
+				{
+					"method":"post",
+					"status":200,
+					"path":"/schema",
+					"controller":"json_schema"
+				},
+				{
+					"method":"post",
+					"status":200,
+					"path":"",
+					"controller":"json_find"
+				},
+				{
+					"method":"post",
+					"status":200,
+					"path":"/:_id",
+					"controller":"json_findById"
 				}
 			]
 		}

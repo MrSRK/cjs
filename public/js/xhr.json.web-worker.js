@@ -28,7 +28,7 @@ jobs.delete=(args,next)=>
     if(!args.url)
         return next({name:'Error',message:'get url not set'},null)
     const http=new XMLHttpRequest()
-    http.open("DELETE",args.url)
+    http.open("DELETE",args.url,true)
     http.setRequestHeader("Content-Type","application/json;charset=UTF-8")
     if(args.data.headers)
         for(let key in args.data.headers)
@@ -62,7 +62,7 @@ jobs.patch=(args,next)=>
     if(!args.url)
         return next({name:'Error',message:'get url not set'},null)
     const http=new XMLHttpRequest()
-    http.open("PATCH",args.url)
+    http.open("PATCH",args.url,true)
     http.setRequestHeader("Content-Type","application/json;charset=UTF-8")
     if(args.data.headers)
         for(let key in args.data.headers)
@@ -96,7 +96,7 @@ jobs.put=(args,next)=>
     if(!args.url)
         return next({name:'Error',message:'get url not set'},null)
     const http=new XMLHttpRequest()
-    http.open("PUT",args.url)
+    http.open("PUT",args.url,true)
     http.setRequestHeader("Content-Type","application/json;charset=UTF-8")
     if(args.data.headers)
         for(let key in args.data.headers)
@@ -130,7 +130,7 @@ jobs.post=(args,next)=>
     if(!args.url)
         return next({name:'Error',message:'get url not set'},null)
     const http=new XMLHttpRequest()
-    http.open("POST",args.url)
+    http.open("POST",args.url,true)
     http.setRequestHeader("Content-Type","application/json;charset=UTF-8")
     if(args.data.headers)
         for(let key in args.data.headers)
@@ -157,11 +157,14 @@ jobs.get=(args,next)=>
     {
         q=[]
         for(let key in args.data.params)
-            q.push(`${key}=${args.data.params[key]}`)
+        {
+            if(key!='body')
+                q.push(`${key}=${args.data.params[key]}`)
+        }
         args.url+='?'+q.join('&')
     }
     const http=new XMLHttpRequest()
-    http.open("GET",args.url)
+    http.open("GET",args.url,true)
     if(args.data.headers)
         for(let key in args.data.headers)
             http.setRequestHeader(key,args.data.headers[key])

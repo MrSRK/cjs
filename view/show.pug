@@ -1,4 +1,25 @@
 extends layout
 block content
-	h1 Show Page
-	
+	.container-fluid(data-ng-init="user.init.model('"+name+"')")
+		nav(aria-label='breadcrumb')
+			ol.breadcrumb.small.px-3.py-1
+				li.breadcrumb-item
+					a(href='#') Home
+				li.breadcrumb-item
+					a(href='#') Library
+				li.breadcrumb-item.active(aria-current='page') Data
+
+		//Show Articles
+		div(data-ng-init="page.list('article','"+_id+"')")
+			.row
+				- for(var i = 0; i < 100; i++)
+					.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-2.mb-4(data-ng-repeat="rec in storage.get('page-list-article')")
+						.card.h-100
+							picture(data-ng-if="rec.images&&rec.images.length>0")
+								source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/article/{{rec._id+'/'+rec.images[0].thumbnail[type].name+'/'+rec.images[0].thumbnail[type].name+'.'+type}}")
+								img.card-img-top(alt="{{rec.title}}",title="{{rec.title}}",src="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",data-ng-src="/upload/images/article/"+_id+"/{{rec.images[0].filename}}")
+							.card-body
+								h5.card-title(data-ng-bind="page.textMaxLength(20,rec.title,'…')")
+								p.small.card-text(data-ng-bind="page.textMaxLength(100,rec.description,'…')")
+							.card-footer.text-muted.text-center
+								a.btn.btn-outline-secondary(href='/article/{{rec._id}}') Περισσότερα
