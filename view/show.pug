@@ -8,18 +8,37 @@ block content
 				li.breadcrumb-item
 					a(href='#') Library
 				li.breadcrumb-item.active(aria-current='page') Data
-
-		//Show Articles
-		div(data-ng-init="page.list('article','"+_id+"')")
+		//#######
+		.mt-5(data-ng-repeat="container in [{name:'article',title:'Δείτε σχετικά Άρθρα',class:'col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4'},{name:'portfolio',title:'Δουλειές μας',class:'col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-4'}]",data-ng-init="page.list(container.name,'"+_id+"')")
+			.row(data-ng-if="storage.get('page-list-'+container.name).length>0")
+				.col-12
+					h6.ml-1.text-primary(data-ng-bind="container.title")
 			.row
-				- for(var i = 0; i < 100; i++)
-					.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-2.mb-4(data-ng-repeat="rec in storage.get('page-list-article')")
+				- for(var i=0;i<4;i++)
+					.col-12(data-ng-repeat="rec in storage.get('page-list-'+container.name)",data-ng-class="container.class")
 						.card.h-100
-							picture(data-ng-if="rec.images&&rec.images.length>0")
-								source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/article/{{rec._id+'/'+rec.images[0].thumbnail[type].name+'/'+rec.images[0].thumbnail[type].name+'.'+type}}")
-								img.card-img-top(alt="{{rec.title}}",title="{{rec.title}}",src="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",data-ng-src="/upload/images/article/"+_id+"/{{rec.images[0].filename}}")
+							a(data-ng-href="/{{container.name+'/'+rec._id}}")
+								picture(data-ng-if="rec.images&&rec.images.length>0")
+									source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/{{container.name+'/'+rec._id+'/'+rec.images[0].thumbnail[type].name+'/'+rec.images[0].thumbnail[type].name+'.'+type}}")
+									img.card-img-top(alt="{{rec.title}}",title="{{rec.title}}",src="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",data-ng-src="/upload/images/{{container.name}}/"+_id+"/{{rec.images[0].filename}}")
 							.card-body
 								h5.card-title(data-ng-bind="page.textMaxLength(20,rec.title,'…')")
 								p.small.card-text(data-ng-bind="page.textMaxLength(100,rec.description,'…')")
 							.card-footer.text-muted.text-center
-								a.btn.btn-outline-secondary(href='/article/{{rec._id}}') Περισσότερα
+								a.btn.btn-outline-secondary(data-ng-href="/{{container.name+'/'+rec._id}}") Περισσότερα
+		//#######
+		.mt-5(data-ng-repeat="container in [{name:'customer',title:'Συνεργάτες μας'}]",data-ng-init="page.list(container.name,'"+_id+"')")
+			.row(data-ng-if="storage.get('page-list-'+container.name).length>0")
+				.col-12
+					h6.ml-1.text-primary(data-ng-bind="container.title")
+
+			.row
+				- for(var i=0;i<12;i++)
+					.col-6.col-sm-4.col-md-3.col-lg-2.col-xl-1.mb-4(data-ng-repeat="rec in storage.get('page-list-'+container.name)")
+						.card.h-100.border-0
+							a(data-ng-href="/{{container.name+'/'+rec._id}}")
+								picture(data-ng-if="rec.images&&rec.images.length>0")
+									source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/{{container.name+'/'+rec._id+'/'+rec.images[0].thumbnail[type].name+'/'+rec.images[0].thumbnail[type].name+'.'+type}}")
+									img.card-img-top.grayscale(alt="{{rec.title}}",title="{{rec.title}}",src="data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",data-ng-src="/upload/images/{{container.name}}/"+_id+"/{{rec.images[0].filename}}")
+							.card-body
+								h6.small.card-title.text-muted(data-ng-bind="page.textMaxLength(20,rec.title,'…')")

@@ -29,8 +29,8 @@ app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)
 						{
 							if(error)
 								return console.log(error)
-							if(!storage_set('page-list-'+model,doc.doc))
-								throw Error('Error on seting navigation data to storage')
+							if(!storage_set('page-list-'+model,doc.doc,false))
+								throw Error('Error on adding data to storage')
 							return true
 						})
 					})
@@ -58,7 +58,7 @@ app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)
 							if(error)
 								return console.log(error)
 							if(!storage_set('navigation',doc.doc))
-								throw Error('Error on seting navigation data to storage')
+								throw Error('Error on seting data to storage')
 							return true
 						})
 					})
@@ -72,14 +72,15 @@ app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)
 		/*
 		 	#### Storage Functions ####
 		*/
-		const storage_set=(location,data)=>
+		const storage_set=(location,data,save=true)=>
 		{
 			try
 			{
 				$scope.storage.data[location]=data
 				$scope.$apply()
 				let name='storage-'+($scope.storage.version||0)
-				sessionStorage.setItem(name,JSON.stringify($scope.storage.data))
+				if(save)
+					sessionStorage.setItem(name,JSON.stringify($scope.storage.data))
 				return true
 			}
 			catch(error)

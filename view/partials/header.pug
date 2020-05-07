@@ -1,8 +1,14 @@
-nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top
-	a.navbar-brand.text-muted(href='/') Saloras Logo Area
-	button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top.py-1.px-4
+	a.navbar-brand.text-muted.mr-5(href='/')
+		picture
+			source(type="image/svg+xml",srcset="/images/logo-small.svg")
+			source(type="image/webp",srcset="/images/logo-small.webp")
+			source(type="image/png",srcset="/images/logo-small.png")
+			source(type="image/jpg",srcset="/images/logo-small.jpg")
+			img(alt="Saloras Satellite Center",title="Saloras Satellite Center",src="/images/logo-small.svg")
+	button.navbar-toggler(type='button', data-toggle='collapse', data-target='#navigation-menu', aria-controls='navigation-menu', aria-expanded='false', aria-label='Toggle navigation')
 		span.navbar-toggler-icon
-	#navbarSupportedContent.collapse.navbar-collapse
+	#navigation-menu.collapse.navbar-collapse
 		ul.navbar-nav.mr-auto(data-ng-init="user.init.navigation()")
 			li.nav-item.text-capitalize(data-ng-repeat="menu in storage.get('navigation')")
 				a.nav-link(data-ng-href="/navigation/{{menu._id}}",data-ng-bind="menu.name")
