@@ -77,25 +77,32 @@ api.json_find=(toolbox,Model,schema,name,req,res)=>
 	try
 	{
 		let where={}
+		let order=''
 		if(req.body&&req.body.where)
 			where=req.body.where
+		if(req.body&&req.body.order)
+			order=req.body.order
+		//console.log(name+' order: '+order)
 		// Get only active records
 		where.active=true
 		return Model
 		.find()
 		.where(where)
 		.select('-password -username -email')
+		.sort(order)
 		.exec()
 		.then(doc=>
 		{
 			return res.status(200).json({status:true,doc:doc})
 		}).catch(error=>
 		{
+			console.log(error)
 			return res.status(500).json({status:false,error:error})
 		})
 	}
 	catch(error)
 	{
+		console.log(error)
 		return res.status(500).json({status:false,error:error})
 	}
 }

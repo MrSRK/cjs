@@ -9,6 +9,30 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 {
 	try
 	{
+		const admin_updateOrder=ar=>
+		{
+			no=ar.rec.order+ar.value
+			model=$scope.model
+			if(!model)
+				return console.error('Model not set')
+			picWorker((error,worker)=>
+			{
+				if(error)
+					return console.log(error)
+				const url='/admin/api/'+model+'/findByIdAndUpdate/'+ar.rec._id
+				const args={data:{order:no}}
+				return worker.patch(url,args,(error,doc)=>
+				{
+					if(error)
+						$scope.error=error
+					if(doc.auth===false)
+						return token_renew(admin_updateOrder,ar)
+					if(!doc.status)
+						$scope.error=new Error(doc.message||"Unknown Error")
+				})
+			})
+			return no
+		}
 		const admin_setModel=model=>
 		{
 			$scope.model=model
@@ -431,6 +455,7 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 		const admin_schema_getTypeByName=(name,type)=>
 		{
 			const types={
+				order:'number',
 				active:'checkbox',
 				name:'text',
 				title:'text',
@@ -657,6 +682,7 @@ app.controller("page-handler",['$scope','$http','$cookies','$cjs',($scope,$http,
 		$scope.admin.insertRecord=admin_insertRecord
 		$scope.admin.loadAsside=admin_loadAsside
 		$scope.admin.formElemendName=admin_formElemendName
+		$scope.admin.updateOrder=admin_updateOrder
 		$scope.model=null
 		/**
 		 * Load login user data to scope (if any)

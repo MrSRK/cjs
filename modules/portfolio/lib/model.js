@@ -28,6 +28,7 @@ const image=mongoose.Schema({
 const schema=new mongoose.Schema({
 	active:{type:Boolean,default:true},
 	parent_navigation:{type:mongoose.Schema.Types.ObjectId,ref:'navigation'},
+	order:{type:Number},
 	name:{type:String},
 	title:{type:String},
 	description:{type:String},

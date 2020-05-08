@@ -46,7 +46,7 @@ app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)
 				{
 					if(error)
 						return console.log(error)
-					return worker.post('/api/'+model,{where:{parent_navigation:parent_navigation}},(error,doc)=>
+					return worker.post('/api/'+model,{where:{parent_navigation:parent_navigation},order:"order"},(error,doc)=>
 					{
 						if(error)
 							return console.log(error)
@@ -74,7 +74,7 @@ app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)
 					{
 						if(error)
 							return console.log(error)
-						return worker.get('/api/navigation',null,(error,doc)=>
+						return worker.post('/api/navigation',{order:"order"},(error,doc)=>
 						{
 							if(error)
 								return console.log(error)

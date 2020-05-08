@@ -27,6 +27,7 @@ const image=mongoose.Schema({
 })
 const schema=new mongoose.Schema({
 	active:{type:Boolean,default:true},
+	order:{type:Number},
 	name:{type:String},
 	email:{type:String,required:true},
 	password:{type:String,required:true},

@@ -9,12 +9,17 @@ block content
 			a.text-muted(href=name+"/update/"+_id)=_id
 		form(data-ng-init="admin.edit('"+_id+"')")
 			div(data-ng-repeat="elemend in page.schema")
+
+				.form-group(data-ng-if="admin.getTypeByName(elemend,'number')")
+					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="elemend")
+					input.form-control(min="0",step="1",id="elemend-{{elemend}}",type="{{admin.getTypeByName(elemend)}}",data-ng-model="page.record[elemend]")
+				
 				.form-group(data-ng-if="admin.getTypeByName(elemend,'text')")
 					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="elemend")
-					input.form-control(id="elemend-{{elemend}}",type="{{admin.getTypeByName(elemend)}}",, placeholder='Enter {{elemend}}',data-ng-model="page.record[elemend]")
+					input.form-control(id="elemend-{{elemend}}",type="{{admin.getTypeByName(elemend)}}",placeholder='Enter {{elemend}}',data-ng-model="page.record[elemend]")
 				.form-group(data-ng-if="admin.getTypeByName(elemend,'textarea')")
 					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="elemend")
-					textarea.form-control(id="elemend-{{elemend}}",type="{{admin.getTypeByName(elemend)}}",, placeholder='Enter {{elemend}}',data-ng-model="page.record[elemend]")
+					textarea.form-control(id="elemend-{{elemend}}",type="{{admin.getTypeByName(elemend)}}",placeholder='Enter {{elemend}}',data-ng-model="page.record[elemend]")
 				.form-check(data-ng-if="admin.getTypeByName(elemend,'checkbox')")
 					input.form-check-input(type="{{admin.getTypeByName(elemend)}}",id="elemend-{{elemend}}",data-ng-model="page.record[elemend]")
 					label.text-capitalize(for="elemend-{{elemend}}",data-ng-bind="elemend")

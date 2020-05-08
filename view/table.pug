@@ -14,7 +14,11 @@ block content
 					button.p-0.btn.btn-link.text-muted(data-ng-click="page.pageOrder('_id')")
 						span.fas(data-ng-class="page.order=='_id'?'fa-sort-alpha-down text-primary':page.order=='-_id'?'fa-sort-alpha-up text-danger':'fa-sort-alpha-down text-muted'")
 					strong.ml-2 ID
-				.col-4.col-md-5.p-0.text-dark
+				.col-1.px-1.text-dark.d-none.d-lg-block
+					button.p-0.btn.btn-link.text-muted(data-ng-click="page.pageOrder('order')")
+						span.fas(data-ng-class="page.order=='order'?'fa-sort-alpha-down text-primary':page.order=='-order'?'fa-sort-alpha-up text-danger':'fa-sort-alpha-down text-muted'")
+					strong.ml-2 Order
+				.col-4.col-md-4.p-0.text-dark
 					button.p-0.btn.btn-link.text-muted(data-ng-click="page.pageOrder('name')")
 						span.fas(data-ng-class="page.order=='name'?'fa-sort-alpha-down text-primary':page.order=='-name'?'fa-sort-alpha-up text-danger':'fa-sort-alpha-down text-muted'")
 					strong.ml-2 Name
@@ -50,11 +54,17 @@ block content
 						span.far(data-ng-class="rec.active?'fa-check-circle text-success':'fa-times-circle text-danger'")
 				.col-2.px-1.text-muted.d-none.d-lg-block
 					a.small(data-ng-href="/"+name+"/{{rec._id}}",data-ng-bind="rec._id",target="_blank")
+				.col-1.d-none.d-lg-block
+					button.btn.btn-link.mr-1.p-0(data-ng-click="rec.order=admin.updateOrder({index:$index,rec:rec,value:1})")
+						small.fas.fa-caret-up
+					button.btn.btn-link.mr-1.p-0(data-ng-click="rec.order=admin.updateOrder({index:$index,rec:rec,value:-1})")
+							small.fas.fa-caret-down.mr-3
+					strong.small.text-muted(data-ng-bind="rec.order")
 				.col-1.d-none.d-md-block
 					picture(data-ng-if="rec.images&&rec.images.length>0")
 						source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/"+name+"/{{rec._id+'/'+rec.images[0].thumbnail[type].name+'/'+rec.images[0].thumbnail[type].name+'.'+type}}")
 						img.img-fluid.w-25(data-ng-src="/upload/images/"+name+"/"+_id+"/{{rec.images[0].filename}}")
-				.col-4.d-none.d-md-block(data-ng-bind="rec.name")
+				.col-3.d-none.d-md-block(data-ng-bind="rec.name")
 				.col-6.small.d-md-none(data-ng-bind="rec.name")
 				.col-1.px-1.d-none.d-md-block.small(data-ng-bind="rec.createdAt | date:'dd/mm/yyyy'")
 				.col-1.px-1.d-none.d-lg-block.small(data-ng-bind="rec.updatedAt | date:'dd/mm/yyyy'")

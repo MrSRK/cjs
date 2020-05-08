@@ -30,6 +30,7 @@ const image=mongoose.Schema({
 })
 const schema=new mongoose.Schema({
 	active:{type:Boolean,default:true},
+	order:{type:Number},
 	name:{type:String},
 	title:{type:String},
 	description:{type:String},
