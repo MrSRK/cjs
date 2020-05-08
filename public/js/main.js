@@ -15,25 +15,46 @@ app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)
 				return text
 			return text.substring(0,length)+end
 		}
+		const page_breadcrumb=_id=>
+		{
+			try
+			{
+				return picWorker((error,worker)=>
+				{
+					if(error)
+						return console.log(error)
+					return worker.get('/api/navigation/'+_id,null,(error,doc)=>
+					{
+						if(error)
+							return console.log(error)
+						if(!storage_set('page-breadcrumb',doc.doc,false))
+							throw Error('Error on adding data to storage')
+						return true
+					})
+				})
+			}
+			catch(error)
+			{
+				console.log(error)
+			}
+		}
 		const page_list=(model,parent_navigation)=>
 		{
 			try
 			{
-				if(!storage_exist('page-list-'+model))
-					return picWorker((error,worker)=>
+				return picWorker((error,worker)=>
+				{
+					if(error)
+						return console.log(error)
+					return worker.post('/api/'+model,{where:{parent_navigation:parent_navigation}},(error,doc)=>
 					{
-						console.log(parent_navigation)
 						if(error)
 							return console.log(error)
-						return worker.post('/api/'+model,{where:{parent_navigation:parent_navigation}},(error,doc)=>
-						{
-							if(error)
-								return console.log(error)
-							if(!storage_set('page-list-'+model,doc.doc,false))
-								throw Error('Error on adding data to storage')
-							return true
-						})
+						if(!storage_set('page-list-'+model,doc.doc,false))
+							throw Error('Error on adding data to storage')
+						return true
 					})
+				})
 			}
 			catch(error)
 			{
@@ -116,7 +137,7 @@ app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)
 					$scope.storage.data[location]=storage[location]
 					return storage[location]
 				}
-				console.log(`data ${location} not exist`)
+				//console.log(`data ${location} not exist`)
 			}
 			catch(error)
 			{
@@ -169,6 +190,7 @@ app.controller("page-handler",['$scope','$cookies','$cjs',($scope,$cookies,$cjs)
 		// Initialize scope (page) objects / functions
 		$scope.page={}
 		$scope.page.list=page_list
+		$scope.page.breadcrumb=page_breadcrumb
 		$scope.page.textMaxLength=page_textMaxLength
 		// Initialize scope (user) objects / functions
 		$scope.user={}

@@ -1,14 +1,19 @@
 doctype html
-html
+html(lang="el",data-ng-app="app",data-ng-controller="page-handler")
 	head
 		meta(charset='utf-8')
 		meta(http-equiv='X-UA-Compatible', content='IE=edge')
 		meta(name='viewport', content='width=device-width, initial-scale=1.0')
-		title #{title} - MrSRK
 		link(rel='shortcut icon', href='/favicon.ico')
 		link(rel='stylesheet', href='/css/main.css')
 
-	body(data-ng-app="app",data-ng-controller="page-handler")
+		link(rel="preload", href="/js/xhr.json.web-worker.js")
+		link(rel="preload", href="/js/cjs.molude.angular.js")
+
+		title(data-ng-bind="(page.title?page.title+' - ':'')+'Saloras Satellite Center'")
+		meta(name="description",content="{{(page.description?page.description:'Μελέτη, Κατασκευή, Τεχνική Υποστήριξη Δικτύων, Εφαρμογών, Συστημάτων Μετάδοσης και Διανομής Τηλεοπτικού Σήματος και Internet')}}")
+		meta(name="theme-color",content="#0000FF)")
+	body
 		include partials/header
 		.container-fluid.pt-3.min-vh-100
 			block content

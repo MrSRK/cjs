@@ -1,3 +1,8 @@
 extends layout
 block content
-	h1 Welcome to Vision Group Home Page
+	.container-fluid
+		nav(aria-label='breadcrumb')
+			ol.breadcrumb.small.px-3.py-1
+				li.breadcrumb-item(aria-current='page',data-ng-init="page.title='SSC'")
+					a(href='/') Αρχική
+		h1 Welcome to Home Page

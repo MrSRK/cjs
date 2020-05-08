@@ -12,6 +12,9 @@ const session=require('./core/session')
 const cookie=require('./core/cookie')
 const security=require('./core/security')
 const sass=require('./core/sass')
+
+var compression=require('compression')
+
 let app=null;
 const deploy=async(config,next)=>
 {
@@ -19,6 +22,9 @@ const deploy=async(config,next)=>
     {
         // Init Express
         app=new express()
+
+        app.use(compression())
+
         // Set Error handler
         errorhandler.deploy((status,error,property)=>
         {
@@ -127,7 +133,8 @@ const deploy=async(config,next)=>
 		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/bootstrap/dist/js'),{maxAge:5184000}))
 		app.use('/js/lib',express.static(path.join(__dirname,'../node_modules/jquery/dist'),{maxAge:5184000}))
 		app.use('/webfonts',express.static(path.join(__dirname,'../node_modules/@fortawesome/fontawesome-free/webfonts')))
-		app.use('/favicon.ico',express.static(path.join(__dirname,'../public/images/favicon.ico'),{maxAge:5184000}))
+        app.use('/favicon.ico',express.static(path.join(__dirname,'../public/images/favicon.ico'),{maxAge:5184000}))
+        app.use('/robots.txt',express.static(path.join(__dirname,'../public/txt/robots.txt'),{maxAge:5184000}))
     }
     catch(error)
     {
