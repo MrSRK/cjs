@@ -5,4 +5,41 @@ block content
 			ol.breadcrumb.small.px-3.py-1
 				li.breadcrumb-item(aria-current='page',data-ng-init="page.title='SSC'")
 					a(href='/') Αρχική
-		h1 Welcome to Home Page
+		#carouselExampleControls.carousel.slide(data-ride='carousel')
+			.carousel-inner
+				.carousel-item(data-ng-repeat="pic in [{c:'FF9999',t:'1',a:true},{c:'99FF99',t:'2'},{c:'9999FF',t:'3'}]",data-ng-class="pic.a==true?'active':''")
+					picture
+						source(media="(max-width: 576px)",type="image/png",data-ng-srcset="https://via.placeholder.com/1000x600/{{pic.c}}/000000/?text={{pic.t}}-5")
+						source(media="(max-width: 768px)",type="image/png",data-ng-srcset="https://via.placeholder.com/1000x500/{{pic.c}}/000000/?text={{pic.t}}-4")
+						source(media="(max-width: 992px)",type="image/png",data-ng-srcset="https://via.placeholder.com/1000x400/{{pic.c}}/000000/?text={{pic.t}}-3")
+						source(media="(max-width: 1200px)",type="image/png",data-ng-srcset="https://via.placeholder.com/1000x300/{{pic.c}}/000000/?text={{pic.t}}-2")
+						img.d-block.w-100(src='https://via.placeholder.com/1000x200/{{pic.c}}/000000/?text={{pic.t}}-1', alt='First slide')
+				//.carousel-item
+					img.d-block.w-100(src='https://via.placeholder.com/1000x100/00FF00/', alt='Second slide')
+				//.carousel-item
+					img.d-block.w-100(src='https://via.placeholder.com/1000x100/0000FF/', alt='Third slide')
+			a.carousel-control-prev(href='#carouselExampleControls', role='button', data-slide='prev')
+				span.carousel-control-prev-icon(aria-hidden='true')
+				span.sr-only Previous
+			a.carousel-control-next(href='#carouselExampleControls', role='button', data-slide='next')
+				span.carousel-control-next-icon(aria-hidden='true')
+				span.sr-only Next
+
+	//#######
+	div(data-ng-init="page.list('home')")
+		.row.mt-5(data-ng-if="storage.get('page-list-home').length>0")
+			.col-12
+				h6.ml-1.text-primary(data-ng-bind="container.title")
+		.row(data-ng-if="storage.get('page-list-home').length>0")
+			.col-12.col-sm-12.col-md-6.col-lg-4.col-xl-3.mb-4(data-ng-repeat="rec in storage.get('page-list-home')")
+				.card.h-100
+					a(data-ng-href="/{{container.name+'/'+rec._id}}")
+						picture(data-ng-if="rec.images&&rec.images.length>0")
+							source(data-ng-repeat="type in ['webp','png','jpg']" type="image/{{type}}",data-ng-srcset="/upload/images/home{{'/'+rec._id+'/'+rec.images[0].thumbnail[type].name+'/'+rec.images[0].thumbnail[type].name+'.'+type}}")
+							img.card-img-top(alt="{{rec.title}}",title="{{rec.title}}",src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw== ",data-ng-src="/upload/images/home/"+_id+"/{{rec.images[0].filename}}")
+					.card-body
+						h5.card-title(data-ng-bind="page.textMaxLength(35,rec.title,'…')")
+						p.small.card-text(data-ng-bind="page.textMaxLength(100,rec.description,'…')")
+					.card-footer.text-muted.text-center
+						a.btn.btn-outline-secondary(data-ng-href="/{{container.name+'/'+rec._id}}") Περισσότερα
+		p

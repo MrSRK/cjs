@@ -4,7 +4,7 @@
         "userRoutes":false,
         "powerUser":"admin",
         "guestDefaultRoot":true,
-        "rewriteRoot":"/",
+        "rewriteRoot":null,
         "routes":
         [
         ]

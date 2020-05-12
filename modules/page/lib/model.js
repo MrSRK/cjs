@@ -1,4 +1,5 @@
 const mongoose=require('mongoose')
+const bcrypt = require('bcrypt-nodejs')
 const modelName=__dirname.split("\\").reverse()[1]
 const image=mongoose.Schema({
 	fieldname:{type:String,required:true},
@@ -30,6 +31,7 @@ const image=mongoose.Schema({
 })
 const schema=new mongoose.Schema({
 	active:{type:Boolean,default:true},
+	parent_navigation:{type:mongoose.Schema.Types.ObjectId,ref:'navigation'},
 	order:{type:Number},
 	name:{type:String},
 	title:{type:String},
