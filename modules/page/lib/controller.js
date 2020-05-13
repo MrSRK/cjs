@@ -46,14 +46,6 @@ const controller=(toolbox,name)=>
 			return toolbox.controller.api[f](toolbox,model,schema,name,req,res)
 		}
 	})
-	// Rewrite Default function for a custom home page
-	route['pug_list']=(req,res)=>
-	{
-		return res.status(200).render('home',
-		{
-			title:'Home Page'
-		})
-	}
 	return route
 }
 module.exports=controller
