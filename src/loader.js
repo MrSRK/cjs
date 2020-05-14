@@ -327,15 +327,20 @@ const routeStaticPages=(router,config)=>
 	router.get('/',(req,res,next)=>
 	{
 		return res.status(200).render('home',{
-			title:'Home Page Page',
-			menu:menu
+			title:'Home Page'
+		})
+	})
+	router.get('/contact',(req,res,next)=>
+	{
+		return res.status(200).render('contact',{
+			title:'Contact Page'
 		})
 	})
 	console.log("| [%s][%s][%s] Attach router [%s] '%s'",chalk.red('PUG'),chalk.gray('AUTH'),chalk.red('error'),chalk.blue('get'),chalk.grey('/error'))
 	router.get('/error',(req,res,next)=>
 	{
 		return res.status(500).render('error',{
-			title:'Admin Page',
+			title:'Error',
 			menu:menu
 		})
 	})

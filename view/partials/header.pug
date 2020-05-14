@@ -12,3 +12,5 @@ nav.navbar.navbar-expand-lg.navbar-light.bg-light.sticky-top.py-1.px-4
 		ul.navbar-nav.mr-auto(data-ng-init="user.init.navigation()")
 			li.nav-item.text-capitalize(data-ng-repeat="menu in storage.get('navigation')")
 				a.nav-link(data-ng-href="/navigation/{{menu._id}}",data-ng-bind="menu.name")
+			li.nav-item.text-capitalize
+				a.nav-link(data-ng-href="/contact") Επικοινωνία

@@ -4,7 +4,9 @@
   "description": "Vision Group Nodejs Core 1",
   "main": "app.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "run": "node app.js"
+    
   },
   "repository": {
     "type": "git",

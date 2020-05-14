@@ -1,0 +1,90 @@
+extends layout
+block content
+	.container-fluid
+		nav(aria-label='breadcrumb')
+			ol.breadcrumb.small.px-3.py-1
+				li.breadcrumb-item
+					a(href='/') Αρχική
+				li.breadcrumb-item.active(aria-current='page')
+					a(href='/contact') Επικοινωνία
+	.container-fluid.px-md-5.mt-5
+		.row
+			.col-12.col-md-5
+				h4
+					i.fab.fa-wpforms.mr-1.text-muted.small
+					span Φόρμα Επικοινωνίας
+				p.small.text-muted Μπορείτε να επικοινωνήσετε μαζί μας γράφοντας τα στοιχεία και το μήνυμα σας στην παρακάτω φόρμα.
+				form(autocomplete="on")
+					.form-group
+						label.small(for='contact-email')
+							i.fas.fa-at.mr-1.text-muted
+							span Email
+						input#contact-email.form-control(type='email', placeholder='Το email σας')
+					.form-group
+						label.small(for='contact-name')
+							i.fas.fa-user.mr-1.text-muted
+							span Ονοματεπώνυμο
+						input#contact-name.form-control(type='text', placeholder='Το ονοματεπώνυμο σας')
+					.form-group
+						label.small(for='contact-message')
+							i.fas.fa-inbox.mr-1.text-muted
+							span Μήνυμα
+						textarea#contact-message.form-control(rows='3',placeholder="Το μήνυμα σας")
+					p.text-right
+						button.btn.btn-outline-secondary(type="submit")
+							i.fas.fa-paper-plane.mr-2.text-muted
+							span Αποστολή
+			.col-12.col-md-7
+				.row
+					.col-12.col-md-9
+						.row
+							.col-12.mb-4
+								h1.h3.mb-0.d-none.d-md-block
+									a(href="https://wwww.saloras.gr",title="SSC") Saloras Satellite Center
+								h1.h4.my-5.d-md-none
+									a(href="https://wwww.saloras.gr",title="SSC") Saloras Satellite Center
+								small.small.text-muted.d-none.d-md-block Στοιχεία Επικοινωνίας
+						.row
+							.col-6.col-md-3.font-weight-bold.small
+								i.fas.fa-map-marker-alt.mr-1.text-muted
+								span Διεύθυνση:
+							.col-6.col-md-9
+								| Στρυμώνος 11
+								br
+								| Ηράκλειο Κρήτης
+						.row
+							.col-6.col-md-3.font-weight-bold.small
+								i.fas.fa-map-marker-alt.mr-1.text-muted
+								span TK:
+							.col-6.col-md-9 713 04
+						.row
+							.col-6.col-md-3.font-weight-bold.small
+								i.fas.fa-phone.mr-1.text-muted
+								span Τηλέφωνο:
+							.col-6.col-md-9
+								a(href="tel:+302810372800") +30 2810 372800
+						.row
+							.col-6.col-md-3.font-weight-bold.small
+								i.fas.fa-at.mr-1.text-muted
+								span E-mail:
+							.col-6.col-md-9
+								a(href="mailto:info@saloras.gr") info@saloras.gr
+					.col-3.px-5.d-none.d-md-block
+						a(href="https://www.saloras.gr",title="Saloras Satellite Center")
+							picture
+								source(type="image/svg+xml",srcset="/images/logo.svg")
+								source(type="image/webp",srcset="/images/logo.webp")
+								source(type="image/png",srcset="/images/logo.png")
+								source(type="image/jpg",srcset="/images/logo.jpg")
+								img.img-fluid(alt="Saloras Satellite Center",title="Saloras Satellite Center",src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw== ",data-ng-src="/images/logo.svg")
+				.row.mt-5
+					.col-12
+							iframe(src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3254.9789469542047!2d25.109478893856796!3d35.33134428300445!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x33597cea71adc7e9!2sSaloras%20Satellite%20Center!5e0!3m2!1sel!2sgr!4v1589441936610!5m2!1sel!2sgr",width="100%",height="450",frameborder="0",aria-hidden="false",tabindex="0")
+	.container.n-none.d-md-block.mt-4
+		p.text-muted.text-center.small
+			strong S
+			span.mr-1 alloras
+			strong S
+			span.mr-1 atellite
+			strong C
+			span enter
